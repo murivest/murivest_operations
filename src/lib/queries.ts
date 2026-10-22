@@ -259,10 +259,10 @@ export type RpcError = {
   hint?: string | null;
 };
 
-export const callRpc = supabase.rpc as unknown as (
+export const callRpc = (supabase.rpc as unknown as (
   fn: string,
   args?: Record<string, unknown>,
-) => PromiseLike<{ data: unknown; error: RpcError | null }>;
+) => PromiseLike<{ data: unknown; error: RpcError | null }>).bind(supabase);
 
 /**
  * Turns a PostgREST/RPC error into a message that can be shown to the user.
