@@ -3,6 +3,96 @@ import { supabase } from "@/integrations/supabase/client";
 /** Shared lightweight data-access helpers. All access is enforced server-side by
  *  row-level security and permission checks in the database. */
 
+export type CountryRecord = {
+  id: string;
+  code: string;
+  name: string;
+  display_name: string;
+  active: boolean;
+  created_at: string;
+};
+
+export type TrainingModule = {
+  id: string;
+  module_number: number;
+  title: string;
+  description: string | null;
+  pass_mark: number;
+  max_attempts: number;
+  is_mandatory: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TrainingProgress = {
+  id: string;
+  user_id: string;
+  module_id: string;
+  status: string;
+  score: number | null;
+  attempts: number;
+  completed_at: string | null;
+  certificate_issued_at: string | null;
+  created_at: string;
+  updated_at: string;
+  training_modules?: {
+    module_number: number;
+    title: string;
+    pass_mark: number;
+    max_attempts: number;
+  } | null;
+};
+
+export type TrainingAssessment = {
+  id: string;
+  user_id: string;
+  module_id: string;
+  score: number;
+  passed: boolean;
+  attempt_number: number;
+  submitted_at: string;
+  training_modules?: { module_number: number; title: string } | null;
+};
+
+export type EmailRequestRecord = {
+  id: string;
+  user_id: string;
+  country_id: string | null;
+  current_email: string | null;
+  requested_prefix: string;
+  display_name: string;
+  role: string;
+  business_justification: string;
+  status: string;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  decision_note: string | null;
+  provisioned_email: string | null;
+  created_at: string;
+  updated_at: string;
+  profiles?: { id: string; full_name: string; email: string } | null;
+  countries?: { display_name: string } | null;
+};
+
+export type CommissionRecord = {
+  id: string;
+  user_id: string;
+  agreement_version: string;
+  transaction_reference: string;
+  contribution: string;
+  calculated_amount: number | null;
+  currency: string;
+  status: string;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  paid_at: string | null;
+  paid_by: string | null;
+  payment_reference: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export async function listStaff() {
   const { data, error } = await supabase
     .from("profiles")
@@ -152,4 +242,103 @@ export function staffName(
   if (!id) return "Unassigned";
   const person = staff?.find((s) => s.id === id);
   return person ? person.full_name || person.email : "—";
+}
+
+// The JCA onboarding/training tables are introduced by migration
+// 20260922000001 and are not yet present in the generated Database types.
+// `newTables` gives a loosely typed client for them so the queries compile;
+// runtime access is still fully constrained by row-level security.
+export const newTables = supabase as any;
+
+// Stored procedures added by the onboarding migrations are likewise missing
+// from the generated types. `callRpc` keeps call sites free of `any` casts.
+export type RpcError = {
+  message: string;
+  code?: string;
+  details?: string | null;
+  hint?: string | null;
+};
+
+export const callRpc = supabase.rpc as unknown as (
+  fn: string,
+  args?: Record<string, unknown>,
+) => PromiseLike<{ data: unknown; error: RpcError | null }>;
+
+/**
+ * Turns a PostgREST/RPC error into a message that can be shown to the user.
+ * The database error is preserved rather than replaced by a generic string,
+ * because the detail is what makes a failure diagnosable.
+ */
+export function rpcErrorMessage(
+  error: RpcError | null | undefined,
+  fallback: string,
+): string {
+  if (!error) return fallback;
+  const parts = [error.message, error.hint, error.details].filter(
+    (p): p is string => !!p && p.trim().length > 0,
+  );
+  const unique = Array.from(new Set(parts));
+  return unique.length > 0 ? unique.join(" — ") : fallback;
+}
+
+export async function listCountries() {
+  const { data, error } = await newTables
+    .from("countries")
+    .select("id, code, name, display_name, active, created_at")
+    .eq("active", true)
+    .order("name");
+  if (error) throw error;
+  return data as CountryRecord[];
+}
+
+export async function listTrainingModules() {
+  const { data, error } = await newTables
+    .from("training_modules")
+    .select("*")
+    .eq("is_active", true)
+    .order("module_number");
+  if (error) throw error;
+  return data as TrainingModule[];
+}
+
+export async function listTrainingProgress(userId?: string) {
+  let query = newTables
+    .from("training_progress")
+    .select("*, training_modules(module_number, title, pass_mark, max_attempts)")
+    .order("created_at", { ascending: true });
+  if (userId) query = query.eq("user_id", userId);
+  const { data, error } = await query;
+  if (error) throw error;
+  return data as TrainingProgress[];
+}
+
+export async function listTrainingAssessments(userId?: string) {
+  let query = newTables
+    .from("training_assessments")
+    .select("*, training_modules(module_number, title)")
+    .order("submitted_at", { ascending: false });
+  if (userId) query = query.eq("user_id", userId);
+  const { data, error } = await query;
+  if (error) throw error;
+  return data as TrainingAssessment[];
+}
+
+export async function listEmailRequests() {
+  // `email_requests` has no foreign key to `public.profiles`, so the profile
+  // cannot be embedded by PostgREST. Names are resolved client-side from the
+  // staff list instead.
+  const { data, error } = await newTables
+    .from("email_requests")
+    .select("*, countries(display_name)")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data as EmailRequestRecord[];
+}
+
+export async function listCommissionRecords(userId?: string) {
+  let query = newTables.from("commission_records").select("*").order("created_at", { ascending: false });
+  if (userId) query = query.eq("user_id", userId);
+  const { data, error } = await query;
+  if (error) throw error;
+  return data as CommissionRecord[];
 }

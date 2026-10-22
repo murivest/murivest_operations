@@ -35,7 +35,7 @@ export function StatCard({
   label: string;
   value: ReactNode;
   hint?: string;
-  tone?: "default" | "gold" | "warning" | "destructive" | "success";
+  tone?: "default" | "gold" | "warning" | "destructive" | "success" | "info";
 }) {
   const accent = {
     default: "bg-border",
@@ -43,6 +43,7 @@ export function StatCard({
     warning: "bg-warning",
     destructive: "bg-destructive",
     success: "bg-success",
+    info: "bg-info",
   }[tone];
   return (
     <div className="surface relative overflow-hidden rounded-md p-4">
@@ -98,15 +99,18 @@ const TONES: Record<string, string> = {
 export function StatusBadge({
   children,
   tone = "neutral",
+  className,
 }: {
   children: ReactNode;
   tone?: keyof typeof TONES;
+  className?: string;
 }) {
   return (
     <span
       className={cn(
         "inline-flex items-center whitespace-nowrap rounded-sm border px-2 py-0.5 text-[11px] font-medium",
         TONES[tone],
+        className,
       )}
     >
       {children}
@@ -229,8 +233,8 @@ export function Field({
 }: {
   label: string;
   children: ReactNode;
-  hint?: string;
-  className?: string;
+  hint?: string | undefined;
+  className?: string | undefined;
 }) {
   return (
     <label className={cn("block space-y-1.5", className)}>

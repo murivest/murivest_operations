@@ -386,7 +386,9 @@ function WorkLogPage() {
         patch["approved_by"] = auth.user?.id ?? null;
         patch["approved_at"] = new Date().toISOString();
       }
-      const { error } = await supabase.from("work_log_entries").update(patch).eq("id", id);
+      const { error } = await (supabase.from("work_log_entries") as any)
+        .update(patch)
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

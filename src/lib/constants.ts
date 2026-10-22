@@ -1,6 +1,6 @@
 import type { Database } from "@/integrations/supabase/types";
 
-export type AppRole = Database["public"]["Enums"]["app_role"];
+export type AppRole = Database["public"]["Enums"]["app_role"] | "junior_capital_advisor" | "senior_advisor" | "country_office_manager" | "operations_administrator" | "applicant";
 export type PropertyStatus = Database["public"]["Enums"]["property_status"];
 export type ReviewStatus = Database["public"]["Enums"]["review_status"];
 export type InquiryStatus = Database["public"]["Enums"]["inquiry_status"];
@@ -33,6 +33,11 @@ export const ROLE_LABEL: Record<AppRole, string> = {
   managing_director: "Managing Director",
   secretariat: "Secretariat & Client Relations Officer",
   capital_advisor: "Associate Capital Advisor",
+  junior_capital_advisor: "Junior Capital Advisor",
+  senior_advisor: "Senior Advisor",
+  country_office_manager: "Country Office Manager",
+  operations_administrator: "Operations Administrator",
+  applicant: "Applicant / Trainee",
 };
 
 export const PROPERTY_STATUS: Record<PropertyStatus, string> = {
@@ -200,7 +205,7 @@ export const CORRESPONDENCE_STATUS: Record<CorrespondenceStatus, string> = {
   closed: "Closed",
 };
 
-export const ESCALATION_CATEGORY: Record<EscalationCategory, string> = {
+export const ESCALATION_CATEGORY: Record<EscalationCategory, string> & Record<string, string> = {
   negotiation: "Negotiation",
   pricing: "Pricing",
   valuation: "Valuation",
@@ -216,7 +221,7 @@ export const ESCALATION_CATEGORY: Record<EscalationCategory, string> = {
   other: "Other",
 };
 
-export const ESCALATION_STATUS: Record<EscalationStatus, string> = {
+export const ESCALATION_STATUS: Record<EscalationStatus, string> & Record<string, string> = {
   open: "Open",
   under_review: "Under Review",
   resolved: "Resolved",

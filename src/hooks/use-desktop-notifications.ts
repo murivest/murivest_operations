@@ -69,7 +69,7 @@ export function useNotificationListener() {
             if (shouldNotify) {
               notify(notification.title, {
                 body: notification.body || undefined,
-                tag: payload.new.id,
+                tag: payload.new["id"],
               });
             }
           }
@@ -85,3 +85,7 @@ export function useNotificationListener() {
 
 // Need to import supabase
 import { supabase } from "@/integrations/supabase/client";
+
+function notify(title: string, arg1: { body: string | undefined; tag: any; }) {
+  throw new Error("Function not implemented.");
+}

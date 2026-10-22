@@ -57,8 +57,7 @@ function SettingsPage() {
   const save = useMutation({
     mutationFn: async () => {
       if (!profile) throw new Error("No profile loaded.");
-      const { error } = await supabase
-        .from("profiles")
+      const { error } = await (supabase.from("profiles") as any)
         .update({
           full_name: fullName,
           job_title: jobTitle,

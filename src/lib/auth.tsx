@@ -6,6 +6,17 @@ import { supabase } from "@/integrations/supabase/client";
 import type { AppRole } from "./constants";
 
 type Profile = {
+  notify_task_assigned: boolean;
+  notify_task_deadline: boolean;
+  notify_appointment: boolean;
+  notify_followup: boolean;
+  notify_escalation: boolean;
+  notify_management_message: boolean;
+  notify_record_correction: boolean;
+  notify_property_review: boolean;
+  notify_announcement: boolean;
+  notify_all_crud: boolean;
+  desktop_notifications: any;
   id: string;
   full_name: string;
   email: string;
@@ -63,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const perms = await supabase
           .from("role_permissions")
           .select("permission")
-          .eq("role", role);
+          .eq("role", role as never);
         permissions = (perms.data ?? []).map((p) => p.permission);
       }
       return { profile: (profileRes.data as Profile) ?? null, role, permissions };

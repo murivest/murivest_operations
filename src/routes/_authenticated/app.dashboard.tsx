@@ -3,9 +3,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { ROLE_LABEL, INQUIRY_STATUS, INQUIRY_SOURCE, PROPERTY_STATUS, TASK_STATUS, PRIORITY } from "@/lib/constants";
+import { ROLE_LABEL, INQUIRY_STATUS, INQUIRY_SOURCE, PROPERTY_STATUS, TASK_STATUS, PRIORITY, type TaskStatus } from "@/lib/constants";
 import {
   endOfTodayISO,
+  formatDate,
   formatDateTime,
   formatTime,
   startOfTodayISO,
@@ -383,7 +384,7 @@ function DashboardPage() {
                       </Link>
                       <p className="text-xs text-muted-foreground">
                         {t.related_client ? `${t.related_client} · ` : ""}
-                        {TASK_STATUS[t.status]}
+                        {TASK_STATUS[t.status as TaskStatus]}
                         {t.priority !== "normal" && ` · ${PRIORITY[t.priority]}`}
                       </p>
                     </div>
@@ -394,7 +395,7 @@ function DashboardPage() {
                         </StatusBadge>
                       )}
                       <StatusBadge tone={statusTone(t.status)} className="text-[10px]">
-                        {TASK_STATUS[t.status]}
+                        {TASK_STATUS[t.status as TaskStatus]}
                       </StatusBadge>
                     </div>
                   </li>

@@ -24,6 +24,10 @@ import {
   BookOpen,
   ClipboardCheck,
   Wallet,
+  GraduationCap,
+  UserCheck,
+  MailOpen,
+  Percent,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
@@ -98,12 +102,26 @@ const NAV: NavGroup[] = [
     items: [{ to: "/app/reports", label: "Daily Reports", icon: FileText, permission: "reports.view" }],
   },
   {
+    heading: "Junior Capital Advisor",
+    items: [
+      { to: "/app/onboarding", label: "Onboarding", icon: UserCheck, permission: "onboarding.view.own" },
+      { to: "/app/training", label: "Training academy", icon: GraduationCap, permission: "training.view" },
+      { to: "/app/email-requests", label: "Company email request", icon: MailOpen, permission: "email_requests.create" },
+      { to: "/app/commission", label: "Commission records", icon: Percent, permission: "commission.view.own" },
+    ],
+  },
+  {
     heading: "System",
     items: [
       { to: "/app/notifications", label: "Notifications", icon: Bell },
       { to: "/app/audit-log", label: "Audit Log", icon: ScrollText, permission: "audit.view" },
       { to: "/app/users", label: "Users", icon: Users, permission: "users.view" },
       { to: "/app/settings", label: "Settings", icon: Settings },
+      { to: "/app/admin/onboarding", label: "Onboarding management", icon: UserCheck, permission: "onboarding.manage" },
+      { to: "/app/admin/countries", label: "Country workspaces", icon: Building2, permission: "countries.manage" },
+      { to: "/app/admin/email-requests", label: "Email requests", icon: MailOpen, permission: "email_requests.manage" },
+      { to: "/app/admin/commission", label: "Commission records", icon: Percent, permission: "commission.manage" },
+      { to: "/app/admin/training", label: "Training management", icon: GraduationCap, permission: "training.manage" },
     ],
   },
 ];
@@ -185,7 +203,7 @@ function NotificationBell() {
   );
 }
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children, restrictTo }: { children: ReactNode; restrictTo?: string[] | undefined }) {
   const { profile, role, can } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -204,7 +222,10 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const groups = NAV.map((group) => ({
     ...group,
-    items: group.items.filter((item) => !item.permission || can(item.permission)),
+    items: group.items.filter((item) => {
+      if (restrictTo && !restrictTo.includes(item.to)) return false;
+      return !item.permission || can(item.permission);
+    }),
   })).filter((group) => group.items.length > 0);
 
   return (

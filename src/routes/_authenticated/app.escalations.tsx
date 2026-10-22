@@ -216,11 +216,17 @@ function EscalationDetailDialog({ escalationId }: { escalationId: string }) {
   const updateStatus = useMutation({
     mutationFn: async (newStatus: string) => {
       const { data: auth } = await supabase.auth.getUser();
-      const { error } = await supabase.from("escalations").update({ 
-        status: newStatus as never,
+      const { error } = await (supabase.from("escalations") as any).update({
+        status: newStatus,
         management_response: response || null,
-        resolved_by: newStatus === "resolved" || newStatus === "closed" ? auth.user?.id : null,
-        resolved_at: newStatus === "resolved" || newStatus === "closed" ? new Date().toISOString() : null,
+        resolved_by:
+          newStatus === "resolved" || newStatus === "closed"
+            ? (auth.user?.id ?? null)
+            : null,
+        resolved_at:
+          newStatus === "resolved" || newStatus === "closed"
+            ? new Date().toISOString()
+            : null,
       }).eq("id", escalationId);
       if (error) throw error;
     },
@@ -327,10 +333,16 @@ function EscalationsPage() {
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const { data: auth } = await supabase.auth.getUser();
-      const { error } = await supabase.from("escalations").update({ 
-        status: status as never,
-        resolved_by: status === "resolved" || status === "closed" ? auth.user?.id : null,
-        resolved_at: status === "resolved" || status === "closed" ? new Date().toISOString() : null,
+      const { error } = await (supabase.from("escalations") as any).update({
+        status: status,
+        resolved_by:
+          status === "resolved" || status === "closed"
+            ? (auth.user?.id ?? null)
+            : null,
+        resolved_at:
+          status === "resolved" || status === "closed"
+            ? new Date().toISOString()
+            : null,
       }).eq("id", id);
       if (error) throw error;
     },

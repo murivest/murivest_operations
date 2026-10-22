@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables, TablesUpdate } from "@/integrations/supabase/types";
 import { useAuth } from "@/lib/auth";
 import { flushEmailQueue } from "@/lib/email-dispatch";
-import { listStaff, listTaskComments, getTask, listPropertyOptions } from "@/lib/queries";
+import { listStaff, listTaskComments, getTask, listPropertyOptions, newTables } from "@/lib/queries";
 import { PRIORITY, TASK_STATUS, optionsOf, type TaskStatus } from "@/lib/constants";
 import { formatDate, formatDateTime, friendlyError, text } from "@/lib/format";
 import {
@@ -99,6 +99,67 @@ function TaskDetailPage() {
     onError: (e) => toast.error(friendlyError(e, "Unable to add comment.")),
   });
 
+  const [evidenceFile, setEvidenceFile] = useState("");
+  const [evidenceDesc, setEvidenceDesc] = useState("");
+
+  const submitEvidence = useMutation({
+    mutationFn: async () => {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) throw new Error("Not signed in.");
+      if (!evidenceFile.trim()) throw new Error("Enter a file URL or reference.");
+      const { error } = await newTables.from("task_evidence").insert({
+        task_id: taskId,
+        user_id: auth.user.id,
+        file_url: evidenceFile,
+        description: evidenceDesc || null,
+        review_status: "pending",
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setEvidenceFile("");
+      setEvidenceDesc("");
+      toast.success("Evidence submitted for review.");
+      queryClient.invalidateQueries({ queryKey: ["task", taskId] });
+      void flushEmailQueue();
+    },
+    onError: (e) => toast.error(friendlyError(e, "Unable to submit evidence.")),
+  });
+
+  const [reviewFeedback, setReviewFeedback] = useState("");
+
+  const reviewEvidence = useMutation({
+    mutationFn: async (decision: "approved" | "changes_requested") => {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) throw new Error("Not signed in.");
+      const latest = await newTables
+        .from("task_evidence")
+        .select("*")
+        .eq("task_id", taskId)
+        .order("submitted_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (latest.error || !latest.data) throw new Error("No evidence to review.");
+      const { error } = await newTables
+        .from("task_evidence")
+        .update({
+          review_status: decision,
+          reviewed_by: auth.user.id,
+          reviewed_at: new Date().toISOString(),
+          feedback: reviewFeedback || null,
+        })
+        .eq("id", latest.data.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setReviewFeedback("");
+      toast.success("Evidence review recorded.");
+      queryClient.invalidateQueries({ queryKey: ["task", taskId] });
+      void flushEmailQueue();
+    },
+    onError: (e) => toast.error(friendlyError(e, "Unable to record review.")),
+  });
+
   const saveDetails = useMutation({
     mutationFn: async () => {
       const patch: TablesUpdate<"tasks"> = {
@@ -176,6 +237,26 @@ function TaskDetailPage() {
               <Button size="sm" onClick={() => updateStatus.mutate("reviewed")}>
                 Approve / Complete
               </Button>
+            ) : null}
+            {can("tasks.review") && task.status === "submitted" ? (
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => reviewEvidence.mutate("approved")}
+                  disabled={reviewEvidence.isPending}
+                >
+                  Approve evidence
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => reviewEvidence.mutate("changes_requested")}
+                  disabled={reviewEvidence.isPending}
+                >
+                  Request changes
+                </Button>
+              </>
             ) : null}
             {can("tasks.edit") && task.status !== "cancelled" ? (
               <Button size="sm" variant="destructive" onClick={() => updateStatus.mutate("cancelled")}>
@@ -293,6 +374,37 @@ function TaskDetailPage() {
               />
               <Button size="sm" onClick={() => addComment.mutate()} disabled={addComment.isPending || !comment.trim()}>
                 {addComment.isPending ? "Posting…" : "Comment"}
+              </Button>
+            </div>
+          </Panel>
+
+          <Panel title="Evidence">
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">File URL / reference</label>
+                <Input
+                  value={evidenceFile}
+                  onChange={(e) => setEvidenceFile(e.target.value)}
+                  placeholder="https://… or document reference"
+                  className="flex-1"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Description</label>
+                <Textarea
+                  rows={2}
+                  value={evidenceDesc}
+                  onChange={(e) => setEvidenceDesc(e.target.value)}
+                  placeholder="What does this evidence show?"
+                  className="flex-1"
+                />
+              </div>
+              <Button
+                onClick={() => submitEvidence.mutate()}
+                disabled={submitEvidence.isPending || !evidenceFile.trim()}
+                className="w-fit"
+              >
+                {submitEvidence.isPending ? "Submitting…" : "Submit evidence"}
               </Button>
             </div>
           </Panel>

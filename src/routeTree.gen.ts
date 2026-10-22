@@ -17,26 +17,36 @@ import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAppAppointmentsRouteImport } from './routes/_authenticated/app.appointments'
 import { Route as AuthenticatedAppAuditLogRouteImport } from './routes/_authenticated/app.audit-log'
 import { Route as AuthenticatedAppCallsRouteImport } from './routes/_authenticated/app.calls'
+import { Route as AuthenticatedAppCommissionRouteImport } from './routes/_authenticated/app.commission'
 import { Route as AuthenticatedAppContactsRouteImport } from './routes/_authenticated/app.contacts'
 import { Route as AuthenticatedAppCorrespondenceRouteImport } from './routes/_authenticated/app.correspondence'
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
+import { Route as AuthenticatedAppEmailRequestsRouteImport } from './routes/_authenticated/app.email-requests'
 import { Route as AuthenticatedAppEscalationsRouteImport } from './routes/_authenticated/app.escalations'
 import { Route as AuthenticatedAppFollowupsRouteImport } from './routes/_authenticated/app.followups'
 import { Route as AuthenticatedAppKnowledgeRouteImport } from './routes/_authenticated/app.knowledge'
 import { Route as AuthenticatedAppNotificationsRouteImport } from './routes/_authenticated/app.notifications'
+import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authenticated/app.onboarding'
 import { Route as AuthenticatedAppReportsRouteImport } from './routes/_authenticated/app.reports'
 import { Route as AuthenticatedAppScriptsRouteImport } from './routes/_authenticated/app.scripts'
 import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app.settings'
 import { Route as AuthenticatedAppTasksRouteImport } from './routes/_authenticated/app.tasks'
+import { Route as AuthenticatedAppTrainingRouteImport } from './routes/_authenticated/app.training'
 import { Route as AuthenticatedAppUsersRouteImport } from './routes/_authenticated/app.users'
 import { Route as AuthenticatedAppWalletRouteImport } from './routes/_authenticated/app.wallet'
 import { Route as AuthenticatedAppWorkLogRouteImport } from './routes/_authenticated/app.work-log'
+import { Route as AuthenticatedAppAdminCommissionRouteImport } from './routes/_authenticated/app.admin.commission'
+import { Route as AuthenticatedAppAdminCountriesRouteImport } from './routes/_authenticated/app.admin.countries'
+import { Route as AuthenticatedAppAdminEmailRequestsRouteImport } from './routes/_authenticated/app.admin.email-requests'
+import { Route as AuthenticatedAppAdminOnboardingRouteImport } from './routes/_authenticated/app.admin.onboarding'
+import { Route as AuthenticatedAppAdminTrainingRouteImport } from './routes/_authenticated/app.admin.training'
 import { Route as AuthenticatedAppAppointmentsAppointmentIdRouteImport } from './routes/_authenticated/app.appointments.$appointmentId'
 import { Route as AuthenticatedAppInquiriesIndexRouteImport } from './routes/_authenticated/app.inquiries.index'
 import { Route as AuthenticatedAppInquiriesInquiryIdRouteImport } from './routes/_authenticated/app.inquiries.$inquiryId'
 import { Route as AuthenticatedAppPropertiesIndexRouteImport } from './routes/_authenticated/app.properties.index'
 import { Route as AuthenticatedAppPropertiesPropertyIdRouteImport } from './routes/_authenticated/app.properties.$propertyId'
 import { Route as AuthenticatedAppTasksTaskIdRouteImport } from './routes/_authenticated/app.tasks.$taskId'
+import { Route as AuthenticatedAppTrainingModuleIdRouteImport } from './routes/_authenticated/app.training.$moduleId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -79,6 +89,12 @@ const AuthenticatedAppCallsRoute = AuthenticatedAppCallsRouteImport.update({
   path: '/calls',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppCommissionRoute =
+  AuthenticatedAppCommissionRouteImport.update({
+    id: '/commission',
+    path: '/commission',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppContactsRoute =
   AuthenticatedAppContactsRouteImport.update({
     id: '/contacts',
@@ -95,6 +111,12 @@ const AuthenticatedAppDashboardRoute =
   AuthenticatedAppDashboardRouteImport.update({
     id: '/dashboard',
     path: '/dashboard',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppEmailRequestsRoute =
+  AuthenticatedAppEmailRequestsRouteImport.update({
+    id: '/email-requests',
+    path: '/email-requests',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
 const AuthenticatedAppEscalationsRoute =
@@ -121,6 +143,12 @@ const AuthenticatedAppNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppOnboardingRoute =
+  AuthenticatedAppOnboardingRouteImport.update({
+    id: '/onboarding',
+    path: '/onboarding',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppReportsRoute = AuthenticatedAppReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
@@ -142,6 +170,12 @@ const AuthenticatedAppTasksRoute = AuthenticatedAppTasksRouteImport.update({
   path: '/tasks',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppTrainingRoute =
+  AuthenticatedAppTrainingRouteImport.update({
+    id: '/training',
+    path: '/training',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppUsersRoute = AuthenticatedAppUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -157,6 +191,36 @@ const AuthenticatedAppWorkLogRoute = AuthenticatedAppWorkLogRouteImport.update({
   path: '/work-log',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppAdminCommissionRoute =
+  AuthenticatedAppAdminCommissionRouteImport.update({
+    id: '/admin/commission',
+    path: '/admin/commission',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAdminCountriesRoute =
+  AuthenticatedAppAdminCountriesRouteImport.update({
+    id: '/admin/countries',
+    path: '/admin/countries',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAdminEmailRequestsRoute =
+  AuthenticatedAppAdminEmailRequestsRouteImport.update({
+    id: '/admin/email-requests',
+    path: '/admin/email-requests',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAdminOnboardingRoute =
+  AuthenticatedAppAdminOnboardingRouteImport.update({
+    id: '/admin/onboarding',
+    path: '/admin/onboarding',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAdminTrainingRoute =
+  AuthenticatedAppAdminTrainingRouteImport.update({
+    id: '/admin/training',
+    path: '/admin/training',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppAppointmentsAppointmentIdRoute =
   AuthenticatedAppAppointmentsAppointmentIdRouteImport.update({
     id: '/$appointmentId',
@@ -193,6 +257,12 @@ const AuthenticatedAppTasksTaskIdRoute =
     path: '/$taskId',
     getParentRoute: () => AuthenticatedAppTasksRoute,
   } as any)
+const AuthenticatedAppTrainingModuleIdRoute =
+  AuthenticatedAppTrainingModuleIdRouteImport.update({
+    id: '/$moduleId',
+    path: '/$moduleId',
+    getParentRoute: () => AuthenticatedAppTrainingRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -201,25 +271,35 @@ export interface FileRoutesByFullPath {
   '/app/appointments': typeof AuthenticatedAppAppointmentsRouteWithChildren
   '/app/audit-log': typeof AuthenticatedAppAuditLogRoute
   '/app/calls': typeof AuthenticatedAppCallsRoute
+  '/app/commission': typeof AuthenticatedAppCommissionRoute
   '/app/contacts': typeof AuthenticatedAppContactsRoute
   '/app/correspondence': typeof AuthenticatedAppCorrespondenceRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
+  '/app/email-requests': typeof AuthenticatedAppEmailRequestsRoute
   '/app/escalations': typeof AuthenticatedAppEscalationsRoute
   '/app/followups': typeof AuthenticatedAppFollowupsRoute
   '/app/knowledge': typeof AuthenticatedAppKnowledgeRoute
   '/app/notifications': typeof AuthenticatedAppNotificationsRoute
+  '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/reports': typeof AuthenticatedAppReportsRoute
   '/app/scripts': typeof AuthenticatedAppScriptsRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/tasks': typeof AuthenticatedAppTasksRouteWithChildren
+  '/app/training': typeof AuthenticatedAppTrainingRouteWithChildren
   '/app/users': typeof AuthenticatedAppUsersRoute
   '/app/wallet': typeof AuthenticatedAppWalletRoute
   '/app/work-log': typeof AuthenticatedAppWorkLogRoute
   '/app/': typeof AuthenticatedAppIndexRoute
+  '/app/admin/commission': typeof AuthenticatedAppAdminCommissionRoute
+  '/app/admin/countries': typeof AuthenticatedAppAdminCountriesRoute
+  '/app/admin/email-requests': typeof AuthenticatedAppAdminEmailRequestsRoute
+  '/app/admin/onboarding': typeof AuthenticatedAppAdminOnboardingRoute
+  '/app/admin/training': typeof AuthenticatedAppAdminTrainingRoute
   '/app/appointments/$appointmentId': typeof AuthenticatedAppAppointmentsAppointmentIdRoute
   '/app/inquiries/$inquiryId': typeof AuthenticatedAppInquiriesInquiryIdRoute
   '/app/properties/$propertyId': typeof AuthenticatedAppPropertiesPropertyIdRoute
   '/app/tasks/$taskId': typeof AuthenticatedAppTasksTaskIdRoute
+  '/app/training/$moduleId': typeof AuthenticatedAppTrainingModuleIdRoute
   '/app/inquiries/': typeof AuthenticatedAppInquiriesIndexRoute
   '/app/properties/': typeof AuthenticatedAppPropertiesIndexRoute
 }
@@ -229,25 +309,35 @@ export interface FileRoutesByTo {
   '/app/appointments': typeof AuthenticatedAppAppointmentsRouteWithChildren
   '/app/audit-log': typeof AuthenticatedAppAuditLogRoute
   '/app/calls': typeof AuthenticatedAppCallsRoute
+  '/app/commission': typeof AuthenticatedAppCommissionRoute
   '/app/contacts': typeof AuthenticatedAppContactsRoute
   '/app/correspondence': typeof AuthenticatedAppCorrespondenceRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
+  '/app/email-requests': typeof AuthenticatedAppEmailRequestsRoute
   '/app/escalations': typeof AuthenticatedAppEscalationsRoute
   '/app/followups': typeof AuthenticatedAppFollowupsRoute
   '/app/knowledge': typeof AuthenticatedAppKnowledgeRoute
   '/app/notifications': typeof AuthenticatedAppNotificationsRoute
+  '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/reports': typeof AuthenticatedAppReportsRoute
   '/app/scripts': typeof AuthenticatedAppScriptsRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/tasks': typeof AuthenticatedAppTasksRouteWithChildren
+  '/app/training': typeof AuthenticatedAppTrainingRouteWithChildren
   '/app/users': typeof AuthenticatedAppUsersRoute
   '/app/wallet': typeof AuthenticatedAppWalletRoute
   '/app/work-log': typeof AuthenticatedAppWorkLogRoute
   '/app': typeof AuthenticatedAppIndexRoute
+  '/app/admin/commission': typeof AuthenticatedAppAdminCommissionRoute
+  '/app/admin/countries': typeof AuthenticatedAppAdminCountriesRoute
+  '/app/admin/email-requests': typeof AuthenticatedAppAdminEmailRequestsRoute
+  '/app/admin/onboarding': typeof AuthenticatedAppAdminOnboardingRoute
+  '/app/admin/training': typeof AuthenticatedAppAdminTrainingRoute
   '/app/appointments/$appointmentId': typeof AuthenticatedAppAppointmentsAppointmentIdRoute
   '/app/inquiries/$inquiryId': typeof AuthenticatedAppInquiriesInquiryIdRoute
   '/app/properties/$propertyId': typeof AuthenticatedAppPropertiesPropertyIdRoute
   '/app/tasks/$taskId': typeof AuthenticatedAppTasksTaskIdRoute
+  '/app/training/$moduleId': typeof AuthenticatedAppTrainingModuleIdRoute
   '/app/inquiries': typeof AuthenticatedAppInquiriesIndexRoute
   '/app/properties': typeof AuthenticatedAppPropertiesIndexRoute
 }
@@ -260,25 +350,35 @@ export interface FileRoutesById {
   '/_authenticated/app/appointments': typeof AuthenticatedAppAppointmentsRouteWithChildren
   '/_authenticated/app/audit-log': typeof AuthenticatedAppAuditLogRoute
   '/_authenticated/app/calls': typeof AuthenticatedAppCallsRoute
+  '/_authenticated/app/commission': typeof AuthenticatedAppCommissionRoute
   '/_authenticated/app/contacts': typeof AuthenticatedAppContactsRoute
   '/_authenticated/app/correspondence': typeof AuthenticatedAppCorrespondenceRoute
   '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
+  '/_authenticated/app/email-requests': typeof AuthenticatedAppEmailRequestsRoute
   '/_authenticated/app/escalations': typeof AuthenticatedAppEscalationsRoute
   '/_authenticated/app/followups': typeof AuthenticatedAppFollowupsRoute
   '/_authenticated/app/knowledge': typeof AuthenticatedAppKnowledgeRoute
   '/_authenticated/app/notifications': typeof AuthenticatedAppNotificationsRoute
+  '/_authenticated/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/_authenticated/app/reports': typeof AuthenticatedAppReportsRoute
   '/_authenticated/app/scripts': typeof AuthenticatedAppScriptsRoute
   '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
   '/_authenticated/app/tasks': typeof AuthenticatedAppTasksRouteWithChildren
+  '/_authenticated/app/training': typeof AuthenticatedAppTrainingRouteWithChildren
   '/_authenticated/app/users': typeof AuthenticatedAppUsersRoute
   '/_authenticated/app/wallet': typeof AuthenticatedAppWalletRoute
   '/_authenticated/app/work-log': typeof AuthenticatedAppWorkLogRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/app/admin/commission': typeof AuthenticatedAppAdminCommissionRoute
+  '/_authenticated/app/admin/countries': typeof AuthenticatedAppAdminCountriesRoute
+  '/_authenticated/app/admin/email-requests': typeof AuthenticatedAppAdminEmailRequestsRoute
+  '/_authenticated/app/admin/onboarding': typeof AuthenticatedAppAdminOnboardingRoute
+  '/_authenticated/app/admin/training': typeof AuthenticatedAppAdminTrainingRoute
   '/_authenticated/app/appointments/$appointmentId': typeof AuthenticatedAppAppointmentsAppointmentIdRoute
   '/_authenticated/app/inquiries/$inquiryId': typeof AuthenticatedAppInquiriesInquiryIdRoute
   '/_authenticated/app/properties/$propertyId': typeof AuthenticatedAppPropertiesPropertyIdRoute
   '/_authenticated/app/tasks/$taskId': typeof AuthenticatedAppTasksTaskIdRoute
+  '/_authenticated/app/training/$moduleId': typeof AuthenticatedAppTrainingModuleIdRoute
   '/_authenticated/app/inquiries/': typeof AuthenticatedAppInquiriesIndexRoute
   '/_authenticated/app/properties/': typeof AuthenticatedAppPropertiesIndexRoute
 }
@@ -291,25 +391,35 @@ export interface FileRouteTypes {
     | '/app/appointments'
     | '/app/audit-log'
     | '/app/calls'
+    | '/app/commission'
     | '/app/contacts'
     | '/app/correspondence'
     | '/app/dashboard'
+    | '/app/email-requests'
     | '/app/escalations'
     | '/app/followups'
     | '/app/knowledge'
     | '/app/notifications'
+    | '/app/onboarding'
     | '/app/reports'
     | '/app/scripts'
     | '/app/settings'
     | '/app/tasks'
+    | '/app/training'
     | '/app/users'
     | '/app/wallet'
     | '/app/work-log'
     | '/app/'
+    | '/app/admin/commission'
+    | '/app/admin/countries'
+    | '/app/admin/email-requests'
+    | '/app/admin/onboarding'
+    | '/app/admin/training'
     | '/app/appointments/$appointmentId'
     | '/app/inquiries/$inquiryId'
     | '/app/properties/$propertyId'
     | '/app/tasks/$taskId'
+    | '/app/training/$moduleId'
     | '/app/inquiries/'
     | '/app/properties/'
   fileRoutesByTo: FileRoutesByTo
@@ -319,25 +429,35 @@ export interface FileRouteTypes {
     | '/app/appointments'
     | '/app/audit-log'
     | '/app/calls'
+    | '/app/commission'
     | '/app/contacts'
     | '/app/correspondence'
     | '/app/dashboard'
+    | '/app/email-requests'
     | '/app/escalations'
     | '/app/followups'
     | '/app/knowledge'
     | '/app/notifications'
+    | '/app/onboarding'
     | '/app/reports'
     | '/app/scripts'
     | '/app/settings'
     | '/app/tasks'
+    | '/app/training'
     | '/app/users'
     | '/app/wallet'
     | '/app/work-log'
     | '/app'
+    | '/app/admin/commission'
+    | '/app/admin/countries'
+    | '/app/admin/email-requests'
+    | '/app/admin/onboarding'
+    | '/app/admin/training'
     | '/app/appointments/$appointmentId'
     | '/app/inquiries/$inquiryId'
     | '/app/properties/$propertyId'
     | '/app/tasks/$taskId'
+    | '/app/training/$moduleId'
     | '/app/inquiries'
     | '/app/properties'
   id:
@@ -349,25 +469,35 @@ export interface FileRouteTypes {
     | '/_authenticated/app/appointments'
     | '/_authenticated/app/audit-log'
     | '/_authenticated/app/calls'
+    | '/_authenticated/app/commission'
     | '/_authenticated/app/contacts'
     | '/_authenticated/app/correspondence'
     | '/_authenticated/app/dashboard'
+    | '/_authenticated/app/email-requests'
     | '/_authenticated/app/escalations'
     | '/_authenticated/app/followups'
     | '/_authenticated/app/knowledge'
     | '/_authenticated/app/notifications'
+    | '/_authenticated/app/onboarding'
     | '/_authenticated/app/reports'
     | '/_authenticated/app/scripts'
     | '/_authenticated/app/settings'
     | '/_authenticated/app/tasks'
+    | '/_authenticated/app/training'
     | '/_authenticated/app/users'
     | '/_authenticated/app/wallet'
     | '/_authenticated/app/work-log'
     | '/_authenticated/app/'
+    | '/_authenticated/app/admin/commission'
+    | '/_authenticated/app/admin/countries'
+    | '/_authenticated/app/admin/email-requests'
+    | '/_authenticated/app/admin/onboarding'
+    | '/_authenticated/app/admin/training'
     | '/_authenticated/app/appointments/$appointmentId'
     | '/_authenticated/app/inquiries/$inquiryId'
     | '/_authenticated/app/properties/$propertyId'
     | '/_authenticated/app/tasks/$taskId'
+    | '/_authenticated/app/training/$moduleId'
     | '/_authenticated/app/inquiries/'
     | '/_authenticated/app/properties/'
   fileRoutesById: FileRoutesById
@@ -436,6 +566,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppCallsRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/commission': {
+      id: '/_authenticated/app/commission'
+      path: '/commission'
+      fullPath: '/app/commission'
+      preLoaderRoute: typeof AuthenticatedAppCommissionRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/contacts': {
       id: '/_authenticated/app/contacts'
       path: '/contacts'
@@ -455,6 +592,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/app/dashboard'
       preLoaderRoute: typeof AuthenticatedAppDashboardRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/email-requests': {
+      id: '/_authenticated/app/email-requests'
+      path: '/email-requests'
+      fullPath: '/app/email-requests'
+      preLoaderRoute: typeof AuthenticatedAppEmailRequestsRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/escalations': {
@@ -485,6 +629,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppNotificationsRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/onboarding': {
+      id: '/_authenticated/app/onboarding'
+      path: '/onboarding'
+      fullPath: '/app/onboarding'
+      preLoaderRoute: typeof AuthenticatedAppOnboardingRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/reports': {
       id: '/_authenticated/app/reports'
       path: '/reports'
@@ -513,6 +664,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppTasksRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/training': {
+      id: '/_authenticated/app/training'
+      path: '/training'
+      fullPath: '/app/training'
+      preLoaderRoute: typeof AuthenticatedAppTrainingRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/users': {
       id: '/_authenticated/app/users'
       path: '/users'
@@ -532,6 +690,41 @@ declare module '@tanstack/react-router' {
       path: '/work-log'
       fullPath: '/app/work-log'
       preLoaderRoute: typeof AuthenticatedAppWorkLogRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/admin/commission': {
+      id: '/_authenticated/app/admin/commission'
+      path: '/admin/commission'
+      fullPath: '/app/admin/commission'
+      preLoaderRoute: typeof AuthenticatedAppAdminCommissionRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/admin/countries': {
+      id: '/_authenticated/app/admin/countries'
+      path: '/admin/countries'
+      fullPath: '/app/admin/countries'
+      preLoaderRoute: typeof AuthenticatedAppAdminCountriesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/admin/email-requests': {
+      id: '/_authenticated/app/admin/email-requests'
+      path: '/admin/email-requests'
+      fullPath: '/app/admin/email-requests'
+      preLoaderRoute: typeof AuthenticatedAppAdminEmailRequestsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/admin/onboarding': {
+      id: '/_authenticated/app/admin/onboarding'
+      path: '/admin/onboarding'
+      fullPath: '/app/admin/onboarding'
+      preLoaderRoute: typeof AuthenticatedAppAdminOnboardingRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/admin/training': {
+      id: '/_authenticated/app/admin/training'
+      path: '/admin/training'
+      fullPath: '/app/admin/training'
+      preLoaderRoute: typeof AuthenticatedAppAdminTrainingRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/appointments/$appointmentId': {
@@ -576,6 +769,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppTasksTaskIdRouteImport
       parentRoute: typeof AuthenticatedAppTasksRoute
     }
+    '/_authenticated/app/training/$moduleId': {
+      id: '/_authenticated/app/training/$moduleId'
+      path: '/$moduleId'
+      fullPath: '/app/training/$moduleId'
+      preLoaderRoute: typeof AuthenticatedAppTrainingModuleIdRouteImport
+      parentRoute: typeof AuthenticatedAppTrainingRoute
+    }
   }
 }
 
@@ -607,25 +807,49 @@ const AuthenticatedAppTasksRouteWithChildren =
     AuthenticatedAppTasksRouteChildren,
   )
 
+interface AuthenticatedAppTrainingRouteChildren {
+  AuthenticatedAppTrainingModuleIdRoute: typeof AuthenticatedAppTrainingModuleIdRoute
+}
+
+const AuthenticatedAppTrainingRouteChildren: AuthenticatedAppTrainingRouteChildren =
+  {
+    AuthenticatedAppTrainingModuleIdRoute:
+      AuthenticatedAppTrainingModuleIdRoute,
+  }
+
+const AuthenticatedAppTrainingRouteWithChildren =
+  AuthenticatedAppTrainingRoute._addFileChildren(
+    AuthenticatedAppTrainingRouteChildren,
+  )
+
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppAppointmentsRoute: typeof AuthenticatedAppAppointmentsRouteWithChildren
   AuthenticatedAppAuditLogRoute: typeof AuthenticatedAppAuditLogRoute
   AuthenticatedAppCallsRoute: typeof AuthenticatedAppCallsRoute
+  AuthenticatedAppCommissionRoute: typeof AuthenticatedAppCommissionRoute
   AuthenticatedAppContactsRoute: typeof AuthenticatedAppContactsRoute
   AuthenticatedAppCorrespondenceRoute: typeof AuthenticatedAppCorrespondenceRoute
   AuthenticatedAppDashboardRoute: typeof AuthenticatedAppDashboardRoute
+  AuthenticatedAppEmailRequestsRoute: typeof AuthenticatedAppEmailRequestsRoute
   AuthenticatedAppEscalationsRoute: typeof AuthenticatedAppEscalationsRoute
   AuthenticatedAppFollowupsRoute: typeof AuthenticatedAppFollowupsRoute
   AuthenticatedAppKnowledgeRoute: typeof AuthenticatedAppKnowledgeRoute
   AuthenticatedAppNotificationsRoute: typeof AuthenticatedAppNotificationsRoute
+  AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
   AuthenticatedAppReportsRoute: typeof AuthenticatedAppReportsRoute
   AuthenticatedAppScriptsRoute: typeof AuthenticatedAppScriptsRoute
   AuthenticatedAppSettingsRoute: typeof AuthenticatedAppSettingsRoute
   AuthenticatedAppTasksRoute: typeof AuthenticatedAppTasksRouteWithChildren
+  AuthenticatedAppTrainingRoute: typeof AuthenticatedAppTrainingRouteWithChildren
   AuthenticatedAppUsersRoute: typeof AuthenticatedAppUsersRoute
   AuthenticatedAppWalletRoute: typeof AuthenticatedAppWalletRoute
   AuthenticatedAppWorkLogRoute: typeof AuthenticatedAppWorkLogRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
+  AuthenticatedAppAdminCommissionRoute: typeof AuthenticatedAppAdminCommissionRoute
+  AuthenticatedAppAdminCountriesRoute: typeof AuthenticatedAppAdminCountriesRoute
+  AuthenticatedAppAdminEmailRequestsRoute: typeof AuthenticatedAppAdminEmailRequestsRoute
+  AuthenticatedAppAdminOnboardingRoute: typeof AuthenticatedAppAdminOnboardingRoute
+  AuthenticatedAppAdminTrainingRoute: typeof AuthenticatedAppAdminTrainingRoute
   AuthenticatedAppInquiriesInquiryIdRoute: typeof AuthenticatedAppInquiriesInquiryIdRoute
   AuthenticatedAppPropertiesPropertyIdRoute: typeof AuthenticatedAppPropertiesPropertyIdRoute
   AuthenticatedAppInquiriesIndexRoute: typeof AuthenticatedAppInquiriesIndexRoute
@@ -637,21 +861,31 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
     AuthenticatedAppAppointmentsRouteWithChildren,
   AuthenticatedAppAuditLogRoute: AuthenticatedAppAuditLogRoute,
   AuthenticatedAppCallsRoute: AuthenticatedAppCallsRoute,
+  AuthenticatedAppCommissionRoute: AuthenticatedAppCommissionRoute,
   AuthenticatedAppContactsRoute: AuthenticatedAppContactsRoute,
   AuthenticatedAppCorrespondenceRoute: AuthenticatedAppCorrespondenceRoute,
   AuthenticatedAppDashboardRoute: AuthenticatedAppDashboardRoute,
+  AuthenticatedAppEmailRequestsRoute: AuthenticatedAppEmailRequestsRoute,
   AuthenticatedAppEscalationsRoute: AuthenticatedAppEscalationsRoute,
   AuthenticatedAppFollowupsRoute: AuthenticatedAppFollowupsRoute,
   AuthenticatedAppKnowledgeRoute: AuthenticatedAppKnowledgeRoute,
   AuthenticatedAppNotificationsRoute: AuthenticatedAppNotificationsRoute,
+  AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
   AuthenticatedAppReportsRoute: AuthenticatedAppReportsRoute,
   AuthenticatedAppScriptsRoute: AuthenticatedAppScriptsRoute,
   AuthenticatedAppSettingsRoute: AuthenticatedAppSettingsRoute,
   AuthenticatedAppTasksRoute: AuthenticatedAppTasksRouteWithChildren,
+  AuthenticatedAppTrainingRoute: AuthenticatedAppTrainingRouteWithChildren,
   AuthenticatedAppUsersRoute: AuthenticatedAppUsersRoute,
   AuthenticatedAppWalletRoute: AuthenticatedAppWalletRoute,
   AuthenticatedAppWorkLogRoute: AuthenticatedAppWorkLogRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
+  AuthenticatedAppAdminCommissionRoute: AuthenticatedAppAdminCommissionRoute,
+  AuthenticatedAppAdminCountriesRoute: AuthenticatedAppAdminCountriesRoute,
+  AuthenticatedAppAdminEmailRequestsRoute:
+    AuthenticatedAppAdminEmailRequestsRoute,
+  AuthenticatedAppAdminOnboardingRoute: AuthenticatedAppAdminOnboardingRoute,
+  AuthenticatedAppAdminTrainingRoute: AuthenticatedAppAdminTrainingRoute,
   AuthenticatedAppInquiriesInquiryIdRoute:
     AuthenticatedAppInquiriesInquiryIdRoute,
   AuthenticatedAppPropertiesPropertyIdRoute:
