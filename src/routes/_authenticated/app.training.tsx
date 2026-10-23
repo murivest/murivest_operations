@@ -1,6 +1,6 @@
 // src/app/training.tsx  (route: /_authenticated/app/training)
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { BookOpenCheck, Clock, FileDown, PlayCircle, Video } from "lucide-react";
 
@@ -35,6 +35,13 @@ function lessonsDone(modCode: string, lessonIds: string[]): number {
 function TrainingPage() {
   const { role, can } = useAuth();
   const queryClient = useQueryClient();
+  const location = useLocation();
+
+  // Child route (module detail) renders through the outlet.
+  if (location.pathname !== "/app/training") {
+    return <Outlet />;
+  }
+
 
   // DB modules/progress are joined to static content by module_number so the
   // existing admin "Manage training" flow keeps working.

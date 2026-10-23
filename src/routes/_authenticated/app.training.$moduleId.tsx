@@ -38,6 +38,17 @@ import { Progress } from "@/components/ui/progress";
 
 export const Route = createFileRoute("/_authenticated/app/training/$moduleId")({
   component: TrainingModulePage,
+  errorComponent: ({ error }) => (
+    <div className="space-y-6">
+      <PageHeader title="Training module" description="Something went wrong loading this module." />
+      <Panel title="Error">
+        <p className="text-sm text-destructive">{(error as { message?: string })?.message ?? String(error)}</p>
+      </Panel>
+      <Button asChild size="sm" variant="outline">
+        <Link to="/app/training">Back to academy</Link>
+      </Button>
+    </div>
+  ),
 });
 
 /* ------------------------------------------------------------------ */
@@ -134,10 +145,19 @@ function CopyBlock({ text, label }: { text: string; label: string }) {
 /* ------------------------------------------------------------------ */
 
 function TrainingModulePage() {
-  const { moduleId } = useParams({ from: "/_authenticated/app/training/$moduleId" });
+  let moduleId: string | undefined;
+  try {
+    moduleId = useParams({ from: "/_authenticated/app/training/$moduleId" }).moduleId;
+  } catch {
+    moduleId = undefined;
+  }
+  if (!moduleId && typeof window !== "undefined") {
+    const segs = window.location.pathname.split("/").filter(Boolean);
+    moduleId = segs[segs.length - 1];
+  }
   const { role } = useAuth();
   const queryClient = useQueryClient();
-  const mod = getModule(moduleId);
+  const mod = getModule(moduleId ?? "");
   const [assessmentScore, setAssessmentScore] = useState("");
   const [, forceRender] = useState(0);
 
@@ -227,15 +247,22 @@ function TrainingModulePage() {
     onError: (e) => toast.error(friendlyError(e, "Unable to submit assessment.")),
   });
 
-  if (!mod) return <EmptyState message="Training module not found." />;
+  if (!mod) {
+    return (
+      <EmptyState
+        message={`Training module not found${moduleId ? ` (${moduleId})` : ""}.`}
+        hint="Open the Training academy and click 'Start module' on a module."
+      />
+    );
+  }
   if (dbRow && isLoading) return <LoadingState label="Loading training module…" />;
 
   const done = progress?.status === "completed";
   const attemptsUsed = progress?.attempts ?? 0;
   const canAttempt = attemptsUsed < mod.maxAttempts || done;
-  const lessonsDoneCount = mod.lessons.filter(
-    (l) => localStorage.getItem(lessonKey(mod.code, l.id)) === "1",
-  ).length;
+  const lessonsDoneCount = typeof window === "undefined"
+    ? 0
+    : mod.lessons.filter((l) => localStorage.getItem(lessonKey(mod.code, l.id)) === "1").length;
   const lessonPct = Math.round((lessonsDoneCount / mod.lessons.length) * 100);
 
   return (
@@ -314,7 +341,7 @@ function TrainingModulePage() {
       <Panel title="Lessons">
         <div className="space-y-4">
           {mod.lessons.map((l, i) => {
-            const lDone = localStorage.getItem(lessonKey(mod.code, l.id)) === "1";
+            const lDone = typeof window === "undefined" ? false : localStorage.getItem(lessonKey(mod.code, l.id)) === "1";
             return (
               <div key={l.id} className="rounded-md border">
                 <div className="flex items-center justify-between gap-3 p-3 border-b bg-muted/40">
