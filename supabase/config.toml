@@ -52,3 +52,13 @@ project_id = "xbpxwykdxjbzfjvhqmnz"
   
   # Also run once daily at 7am EAT (4am UTC) for morning prep
   daily-morning-check = "0 4 * * 1-5"
+[functions.receive-website-events]
+enabled = true
+verify_jwt = false
+import_map = "./functions/receive-website-events/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/receive-website-events/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/receive-website-events/*.html" ]

@@ -28,6 +28,12 @@ import {
   UserCheck,
   MailOpen,
   Percent,
+  Globe,
+  ChartNoAxesCombined,
+  UserRound,
+  Megaphone,
+  FolderOpen,
+  Activity,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
@@ -45,45 +51,172 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNotificationListener } from "@/hooks/use-desktop-notifications";
 
-type NavItem = { to: string; label: string; icon: typeof Gauge; permission?: string };
+type NavItem = {
+  to: string;
+  label: string;
+  icon: typeof Gauge;
+  permission?: string;
+  planned?: boolean;
+};
 type NavGroup = { heading: string; items: NavItem[] };
 
 const NAV: NavGroup[] = [
   {
-    heading: "Overview",
-    items: [{ to: "/app/dashboard", label: "Dashboard", icon: Gauge, permission: "dashboard.view" }],
+    heading: "OPERATIONS",
+    items: [
+      { to: "/app/dashboard", label: "Dashboard", icon: Gauge, permission: "dashboard.view" },
+    ],
   },
   {
-    heading: "Client & Secretariat",
+    heading: "Website CRM",
     items: [
-      { to: "/app/inquiries", label: "Inquiries", icon: ClipboardList, permission: "inquiries.view" },
+      {
+        to: "/app/website/inquiries",
+        label: "All inquiries",
+        icon: ClipboardList,
+        permission: "website_inquiries.view",
+      },
+      {
+        to: "/app/website/investors",
+        label: "Investor leads",
+        icon: Contact,
+        permission: "website_inquiries.view",
+        planned: true,
+      },
+      {
+        to: "/app/website/subscriptions",
+        label: "Subscriptions",
+        icon: Mail,
+        permission: "website_inquiries.view",
+        planned: true,
+      },
+      {
+        to: "/app/website/analytics",
+        label: "Lead analytics",
+        icon: ChartNoAxesCombined,
+        permission: "website_inquiries.view",
+        planned: true,
+      },
+    ],
+  },
+  {
+    heading: "Investor Portal Administration",
+    items: [
+      {
+        to: "/app/admin/investors",
+        label: "Investor accounts",
+        icon: Users,
+        permission: "users.manage",
+        planned: true,
+      },
+      {
+        to: "/app/admin/portal/documents",
+        label: "Portal documents",
+        icon: FileText,
+        permission: "users.manage",
+        planned: true,
+      },
+      {
+        to: "/app/admin/portal/announcements",
+        label: "Announcements",
+        icon: Megaphone,
+        permission: "users.manage",
+        planned: true,
+      },
+      {
+        to: "/app/admin/portal/properties",
+        label: "Featured properties",
+        icon: Building2,
+        permission: "users.manage",
+        planned: true,
+      },
+      {
+        to: "/app/admin/portal/resources",
+        label: "Resource management",
+        icon: FolderOpen,
+        permission: "users.manage",
+        planned: true,
+      },
+      {
+        to: "/app/admin/portal/activity",
+        label: "Portal activity",
+        icon: Activity,
+        permission: "users.manage",
+        planned: true,
+      },
+    ],
+  },
+  {
+    heading: "Administration",
+    items: [
+      {
+        to: "/app/admin/countries",
+        label: "Countries and markets",
+        icon: Globe,
+        permission: "countries.manage",
+      },
+      { to: "/app/users", label: "Staff & roles", icon: UserRound, permission: "users.view" },
+      { to: "/app/audit-log", label: "Audit logs", icon: ScrollText, permission: "audit.view" },
+      { to: "/app/notifications", label: "Notification centre", icon: Bell },
+    ],
+  },
+  {
+    heading: "Client Relations",
+    items: [
+      {
+        to: "/app/inquiries",
+        label: "Inquiries",
+        icon: ClipboardList,
+        permission: "inquiries.view",
+      },
       { to: "/app/calls", label: "Calls", icon: PhoneCall, permission: "calls.view" },
-      { to: "/app/appointments", label: "Appointments", icon: CalendarDays, permission: "appointments.view" },
+      {
+        to: "/app/appointments",
+        label: "Appointments",
+        icon: CalendarDays,
+        permission: "appointments.view",
+      },
       { to: "/app/followups", label: "Follow-ups", icon: Timer, permission: "followups.view" },
       { to: "/app/contacts", label: "Contacts", icon: Contact, permission: "contacts.view" },
-      { to: "/app/scripts", label: "Call Scripts", icon: MessageSquareQuote, permission: "scripts.view" },
-      { to: "/app/correspondence", label: "Correspondence", icon: Mail, permission: "correspondence.view" },
+      {
+        to: "/app/scripts",
+        label: "Call Scripts",
+        icon: MessageSquareQuote,
+        permission: "scripts.view",
+      },
+      {
+        to: "/app/correspondence",
+        label: "Correspondence",
+        icon: Mail,
+        permission: "correspondence.view",
+      },
     ],
   },
   {
     heading: "Tasks & Workflow",
     items: [
       { to: "/app/tasks", label: "Tasks", icon: Flag, permission: "tasks.view" },
-      { to: "/app/escalations", label: "Escalations", icon: AlertTriangle, permission: "escalations.view" },
+      {
+        to: "/app/escalations",
+        label: "Escalations",
+        icon: AlertTriangle,
+        permission: "escalations.view",
+      },
     ],
   },
   {
     heading: "Properties",
     items: [
-      { to: "/app/properties", label: "All Properties", icon: Building2, permission: "properties.view" },
+      {
+        to: "/app/properties",
+        label: "All Properties",
+        icon: Building2,
+        permission: "properties.view",
+      },
       { to: "/app/work-log", label: "Work Log", icon: ClipboardCheck, permission: "worklog.view" },
     ],
   },
@@ -94,34 +227,77 @@ const NAV: NavGroup[] = [
   {
     heading: "Knowledge",
     items: [
-      { to: "/app/knowledge", label: "Knowledge Guide", icon: BookOpen, permission: "knowledge.view" },
+      {
+        to: "/app/knowledge",
+        label: "Knowledge Guide",
+        icon: BookOpen,
+        permission: "knowledge.view",
+      },
     ],
   },
   {
     heading: "Reports",
-    items: [{ to: "/app/reports", label: "Daily Reports", icon: FileText, permission: "reports.view" }],
+    items: [
+      { to: "/app/reports", label: "Daily Reports", icon: FileText, permission: "reports.view" },
+    ],
   },
   {
     heading: "Junior Capital Advisor",
     items: [
-      { to: "/app/onboarding", label: "Onboarding", icon: UserCheck, permission: "onboarding.view.own" },
-      { to: "/app/training", label: "Training academy", icon: GraduationCap, permission: "training.view" },
-      { to: "/app/email-requests", label: "Company email request", icon: MailOpen, permission: "email_requests.create" },
-      { to: "/app/commission", label: "Commission records", icon: Percent, permission: "commission.view.own" },
+      {
+        to: "/app/onboarding",
+        label: "Onboarding",
+        icon: UserCheck,
+        permission: "onboarding.view.own",
+      },
+      {
+        to: "/app/training",
+        label: "Training academy",
+        icon: GraduationCap,
+        permission: "training.view",
+      },
+      {
+        to: "/app/email-requests",
+        label: "Company email request",
+        icon: MailOpen,
+        permission: "email_requests.create",
+      },
+      {
+        to: "/app/commission",
+        label: "Commission records",
+        icon: Percent,
+        permission: "commission.view.own",
+      },
     ],
   },
   {
     heading: "System",
     items: [
-      { to: "/app/notifications", label: "Notifications", icon: Bell },
-      { to: "/app/audit-log", label: "Audit Log", icon: ScrollText, permission: "audit.view" },
-      { to: "/app/users", label: "Users", icon: Users, permission: "users.view" },
       { to: "/app/settings", label: "Settings", icon: Settings },
-      { to: "/app/admin/onboarding", label: "Onboarding management", icon: UserCheck, permission: "onboarding.manage" },
-      { to: "/app/admin/countries", label: "Country workspaces", icon: Building2, permission: "countries.manage" },
-      { to: "/app/admin/email-requests", label: "Email requests", icon: MailOpen, permission: "email_requests.manage" },
-      { to: "/app/admin/commission", label: "Commission records", icon: Percent, permission: "commission.manage" },
-      { to: "/app/admin/training", label: "Training management", icon: GraduationCap, permission: "training.manage" },
+      {
+        to: "/app/admin/onboarding",
+        label: "Onboarding management",
+        icon: UserCheck,
+        permission: "onboarding.manage",
+      },
+      {
+        to: "/app/admin/email-requests",
+        label: "Email requests",
+        icon: MailOpen,
+        permission: "email_requests.manage",
+      },
+      {
+        to: "/app/admin/commission",
+        label: "Commission records",
+        icon: Percent,
+        permission: "commission.manage",
+      },
+      {
+        to: "/app/admin/training",
+        label: "Training management",
+        icon: GraduationCap,
+        permission: "training.manage",
+      },
     ],
   },
 ];
@@ -179,17 +355,13 @@ function NotificationBell() {
         </div>
         <ScrollArea className="max-h-80">
           {data.length === 0 ? (
-            <p className="px-3 py-8 text-center text-sm text-muted-foreground">
-              No notifications.
-            </p>
+            <p className="px-3 py-8 text-center text-sm text-muted-foreground">No notifications.</p>
           ) : (
             <ul className="divide-y divide-border">
               {data.map((n) => (
                 <li key={n.id} className={cn("px-3 py-2.5", !n.read_at && "bg-accent/50")}>
                   <p className="text-sm font-medium text-foreground">{n.title}</p>
-                  {n.body ? (
-                    <p className="text-xs text-muted-foreground">{n.body}</p>
-                  ) : null}
+                  {n.body ? <p className="text-xs text-muted-foreground">{n.body}</p> : null}
                   <p className="mt-1 text-[11px] text-muted-foreground">
                     {formatDateTime(n.created_at)}
                   </p>
@@ -203,7 +375,13 @@ function NotificationBell() {
   );
 }
 
-export function AppShell({ children, restrictTo }: { children: ReactNode; restrictTo?: string[] | undefined }) {
+export function AppShell({
+  children,
+  restrictTo,
+}: {
+  children: ReactNode;
+  restrictTo?: string[] | undefined;
+}) {
   const { profile, role, can } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -267,8 +445,7 @@ export function AppShell({ children, restrictTo }: { children: ReactNode; restri
               </p>
               <ul className="space-y-0.5">
                 {group.items.map((item) => {
-                  const active =
-                    pathname === item.to || pathname.startsWith(`${item.to}/`);
+                  const active = pathname === item.to || pathname.startsWith(`${item.to}/`);
                   const Icon = item.icon;
                   return (
                     <li key={item.to}>
@@ -284,6 +461,11 @@ export function AppShell({ children, restrictTo }: { children: ReactNode; restri
                       >
                         <Icon className="size-4 shrink-0" />
                         {item.label}
+                        {item.planned ? (
+                          <span className="ml-auto rounded-sm border border-sidebar-border px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-sidebar-foreground/60">
+                            New
+                          </span>
+                        ) : null}
                       </Link>
                     </li>
                   );

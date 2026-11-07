@@ -89,7 +89,7 @@ function LoginPage() {
         </div>
         <div className="max-w-md">
           <h2 className="font-serif text-3xl leading-snug text-sidebar-accent-foreground">
-            Internal Operations, Secretariat &amp; Capital Advisory
+            Internal Operations &amp; Capital Advisory
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-sidebar-foreground/70">
             A single, auditable record of every call, inquiry, appointment, follow-up and

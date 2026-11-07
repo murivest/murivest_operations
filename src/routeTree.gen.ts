@@ -34,10 +34,12 @@ import { Route as AuthenticatedAppTasksRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAppTrainingRouteImport } from './routes/_authenticated/app.training'
 import { Route as AuthenticatedAppUsersRouteImport } from './routes/_authenticated/app.users'
 import { Route as AuthenticatedAppWalletRouteImport } from './routes/_authenticated/app.wallet'
+import { Route as AuthenticatedAppWebsiteInquiriesRouteImport } from './routes/_authenticated/app.website-inquiries'
 import { Route as AuthenticatedAppWorkLogRouteImport } from './routes/_authenticated/app.work-log'
 import { Route as AuthenticatedAppAdminCommissionRouteImport } from './routes/_authenticated/app.admin.commission'
 import { Route as AuthenticatedAppAdminCountriesRouteImport } from './routes/_authenticated/app.admin.countries'
 import { Route as AuthenticatedAppAdminEmailRequestsRouteImport } from './routes/_authenticated/app.admin.email-requests'
+import { Route as AuthenticatedAppAdminInvestorsRouteImport } from './routes/_authenticated/app.admin.investors'
 import { Route as AuthenticatedAppAdminOnboardingRouteImport } from './routes/_authenticated/app.admin.onboarding'
 import { Route as AuthenticatedAppAdminTrainingRouteImport } from './routes/_authenticated/app.admin.training'
 import { Route as AuthenticatedAppAppointmentsAppointmentIdRouteImport } from './routes/_authenticated/app.appointments.$appointmentId'
@@ -47,6 +49,16 @@ import { Route as AuthenticatedAppPropertiesIndexRouteImport } from './routes/_a
 import { Route as AuthenticatedAppPropertiesPropertyIdRouteImport } from './routes/_authenticated/app.properties.$propertyId'
 import { Route as AuthenticatedAppTasksTaskIdRouteImport } from './routes/_authenticated/app.tasks.$taskId'
 import { Route as AuthenticatedAppTrainingModuleIdRouteImport } from './routes/_authenticated/app.training.$moduleId'
+import { Route as AuthenticatedAppWebsiteAnalyticsRouteImport } from './routes/_authenticated/app.website.analytics'
+import { Route as AuthenticatedAppWebsiteInvestorsRouteImport } from './routes/_authenticated/app.website.investors'
+import { Route as AuthenticatedAppWebsiteSubscriptionsRouteImport } from './routes/_authenticated/app.website.subscriptions'
+import { Route as AuthenticatedAppAdminPortalActivityRouteImport } from './routes/_authenticated/app.admin.portal.activity'
+import { Route as AuthenticatedAppAdminPortalAnnouncementsRouteImport } from './routes/_authenticated/app.admin.portal.announcements'
+import { Route as AuthenticatedAppAdminPortalDocumentsRouteImport } from './routes/_authenticated/app.admin.portal.documents'
+import { Route as AuthenticatedAppAdminPortalPropertiesRouteImport } from './routes/_authenticated/app.admin.portal.properties'
+import { Route as AuthenticatedAppAdminPortalResourcesRouteImport } from './routes/_authenticated/app.admin.portal.resources'
+import { Route as AuthenticatedAppWebsiteInquiriesIndexRouteImport } from './routes/_authenticated/app.website.inquiries.index'
+import { Route as AuthenticatedAppWebsiteInquiriesCountryRouteImport } from './routes/_authenticated/app.website.inquiries.$country'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -186,6 +198,12 @@ const AuthenticatedAppWalletRoute = AuthenticatedAppWalletRouteImport.update({
   path: '/wallet',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppWebsiteInquiriesRoute =
+  AuthenticatedAppWebsiteInquiriesRouteImport.update({
+    id: '/website-inquiries',
+    path: '/website-inquiries',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppWorkLogRoute = AuthenticatedAppWorkLogRouteImport.update({
   id: '/work-log',
   path: '/work-log',
@@ -207,6 +225,12 @@ const AuthenticatedAppAdminEmailRequestsRoute =
   AuthenticatedAppAdminEmailRequestsRouteImport.update({
     id: '/admin/email-requests',
     path: '/admin/email-requests',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAdminInvestorsRoute =
+  AuthenticatedAppAdminInvestorsRouteImport.update({
+    id: '/admin/investors',
+    path: '/admin/investors',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
 const AuthenticatedAppAdminOnboardingRoute =
@@ -263,6 +287,66 @@ const AuthenticatedAppTrainingModuleIdRoute =
     path: '/$moduleId',
     getParentRoute: () => AuthenticatedAppTrainingRoute,
   } as any)
+const AuthenticatedAppWebsiteAnalyticsRoute =
+  AuthenticatedAppWebsiteAnalyticsRouteImport.update({
+    id: '/website/analytics',
+    path: '/website/analytics',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppWebsiteInvestorsRoute =
+  AuthenticatedAppWebsiteInvestorsRouteImport.update({
+    id: '/website/investors',
+    path: '/website/investors',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppWebsiteSubscriptionsRoute =
+  AuthenticatedAppWebsiteSubscriptionsRouteImport.update({
+    id: '/website/subscriptions',
+    path: '/website/subscriptions',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAdminPortalActivityRoute =
+  AuthenticatedAppAdminPortalActivityRouteImport.update({
+    id: '/admin/portal/activity',
+    path: '/admin/portal/activity',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAdminPortalAnnouncementsRoute =
+  AuthenticatedAppAdminPortalAnnouncementsRouteImport.update({
+    id: '/admin/portal/announcements',
+    path: '/admin/portal/announcements',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAdminPortalDocumentsRoute =
+  AuthenticatedAppAdminPortalDocumentsRouteImport.update({
+    id: '/admin/portal/documents',
+    path: '/admin/portal/documents',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAdminPortalPropertiesRoute =
+  AuthenticatedAppAdminPortalPropertiesRouteImport.update({
+    id: '/admin/portal/properties',
+    path: '/admin/portal/properties',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppAdminPortalResourcesRoute =
+  AuthenticatedAppAdminPortalResourcesRouteImport.update({
+    id: '/admin/portal/resources',
+    path: '/admin/portal/resources',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppWebsiteInquiriesIndexRoute =
+  AuthenticatedAppWebsiteInquiriesIndexRouteImport.update({
+    id: '/website/inquiries/',
+    path: '/website/inquiries/',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppWebsiteInquiriesCountryRoute =
+  AuthenticatedAppWebsiteInquiriesCountryRouteImport.update({
+    id: '/website/inquiries/$country',
+    path: '/website/inquiries/$country',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -288,11 +372,13 @@ export interface FileRoutesByFullPath {
   '/app/training': typeof AuthenticatedAppTrainingRouteWithChildren
   '/app/users': typeof AuthenticatedAppUsersRoute
   '/app/wallet': typeof AuthenticatedAppWalletRoute
+  '/app/website-inquiries': typeof AuthenticatedAppWebsiteInquiriesRoute
   '/app/work-log': typeof AuthenticatedAppWorkLogRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/admin/commission': typeof AuthenticatedAppAdminCommissionRoute
   '/app/admin/countries': typeof AuthenticatedAppAdminCountriesRoute
   '/app/admin/email-requests': typeof AuthenticatedAppAdminEmailRequestsRoute
+  '/app/admin/investors': typeof AuthenticatedAppAdminInvestorsRoute
   '/app/admin/onboarding': typeof AuthenticatedAppAdminOnboardingRoute
   '/app/admin/training': typeof AuthenticatedAppAdminTrainingRoute
   '/app/appointments/$appointmentId': typeof AuthenticatedAppAppointmentsAppointmentIdRoute
@@ -300,8 +386,18 @@ export interface FileRoutesByFullPath {
   '/app/properties/$propertyId': typeof AuthenticatedAppPropertiesPropertyIdRoute
   '/app/tasks/$taskId': typeof AuthenticatedAppTasksTaskIdRoute
   '/app/training/$moduleId': typeof AuthenticatedAppTrainingModuleIdRoute
+  '/app/website/analytics': typeof AuthenticatedAppWebsiteAnalyticsRoute
+  '/app/website/investors': typeof AuthenticatedAppWebsiteInvestorsRoute
+  '/app/website/subscriptions': typeof AuthenticatedAppWebsiteSubscriptionsRoute
   '/app/inquiries/': typeof AuthenticatedAppInquiriesIndexRoute
   '/app/properties/': typeof AuthenticatedAppPropertiesIndexRoute
+  '/app/admin/portal/activity': typeof AuthenticatedAppAdminPortalActivityRoute
+  '/app/admin/portal/announcements': typeof AuthenticatedAppAdminPortalAnnouncementsRoute
+  '/app/admin/portal/documents': typeof AuthenticatedAppAdminPortalDocumentsRoute
+  '/app/admin/portal/properties': typeof AuthenticatedAppAdminPortalPropertiesRoute
+  '/app/admin/portal/resources': typeof AuthenticatedAppAdminPortalResourcesRoute
+  '/app/website/inquiries/$country': typeof AuthenticatedAppWebsiteInquiriesCountryRoute
+  '/app/website/inquiries/': typeof AuthenticatedAppWebsiteInquiriesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -326,11 +422,13 @@ export interface FileRoutesByTo {
   '/app/training': typeof AuthenticatedAppTrainingRouteWithChildren
   '/app/users': typeof AuthenticatedAppUsersRoute
   '/app/wallet': typeof AuthenticatedAppWalletRoute
+  '/app/website-inquiries': typeof AuthenticatedAppWebsiteInquiriesRoute
   '/app/work-log': typeof AuthenticatedAppWorkLogRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/admin/commission': typeof AuthenticatedAppAdminCommissionRoute
   '/app/admin/countries': typeof AuthenticatedAppAdminCountriesRoute
   '/app/admin/email-requests': typeof AuthenticatedAppAdminEmailRequestsRoute
+  '/app/admin/investors': typeof AuthenticatedAppAdminInvestorsRoute
   '/app/admin/onboarding': typeof AuthenticatedAppAdminOnboardingRoute
   '/app/admin/training': typeof AuthenticatedAppAdminTrainingRoute
   '/app/appointments/$appointmentId': typeof AuthenticatedAppAppointmentsAppointmentIdRoute
@@ -338,8 +436,18 @@ export interface FileRoutesByTo {
   '/app/properties/$propertyId': typeof AuthenticatedAppPropertiesPropertyIdRoute
   '/app/tasks/$taskId': typeof AuthenticatedAppTasksTaskIdRoute
   '/app/training/$moduleId': typeof AuthenticatedAppTrainingModuleIdRoute
+  '/app/website/analytics': typeof AuthenticatedAppWebsiteAnalyticsRoute
+  '/app/website/investors': typeof AuthenticatedAppWebsiteInvestorsRoute
+  '/app/website/subscriptions': typeof AuthenticatedAppWebsiteSubscriptionsRoute
   '/app/inquiries': typeof AuthenticatedAppInquiriesIndexRoute
   '/app/properties': typeof AuthenticatedAppPropertiesIndexRoute
+  '/app/admin/portal/activity': typeof AuthenticatedAppAdminPortalActivityRoute
+  '/app/admin/portal/announcements': typeof AuthenticatedAppAdminPortalAnnouncementsRoute
+  '/app/admin/portal/documents': typeof AuthenticatedAppAdminPortalDocumentsRoute
+  '/app/admin/portal/properties': typeof AuthenticatedAppAdminPortalPropertiesRoute
+  '/app/admin/portal/resources': typeof AuthenticatedAppAdminPortalResourcesRoute
+  '/app/website/inquiries/$country': typeof AuthenticatedAppWebsiteInquiriesCountryRoute
+  '/app/website/inquiries': typeof AuthenticatedAppWebsiteInquiriesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -367,11 +475,13 @@ export interface FileRoutesById {
   '/_authenticated/app/training': typeof AuthenticatedAppTrainingRouteWithChildren
   '/_authenticated/app/users': typeof AuthenticatedAppUsersRoute
   '/_authenticated/app/wallet': typeof AuthenticatedAppWalletRoute
+  '/_authenticated/app/website-inquiries': typeof AuthenticatedAppWebsiteInquiriesRoute
   '/_authenticated/app/work-log': typeof AuthenticatedAppWorkLogRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/admin/commission': typeof AuthenticatedAppAdminCommissionRoute
   '/_authenticated/app/admin/countries': typeof AuthenticatedAppAdminCountriesRoute
   '/_authenticated/app/admin/email-requests': typeof AuthenticatedAppAdminEmailRequestsRoute
+  '/_authenticated/app/admin/investors': typeof AuthenticatedAppAdminInvestorsRoute
   '/_authenticated/app/admin/onboarding': typeof AuthenticatedAppAdminOnboardingRoute
   '/_authenticated/app/admin/training': typeof AuthenticatedAppAdminTrainingRoute
   '/_authenticated/app/appointments/$appointmentId': typeof AuthenticatedAppAppointmentsAppointmentIdRoute
@@ -379,8 +489,18 @@ export interface FileRoutesById {
   '/_authenticated/app/properties/$propertyId': typeof AuthenticatedAppPropertiesPropertyIdRoute
   '/_authenticated/app/tasks/$taskId': typeof AuthenticatedAppTasksTaskIdRoute
   '/_authenticated/app/training/$moduleId': typeof AuthenticatedAppTrainingModuleIdRoute
+  '/_authenticated/app/website/analytics': typeof AuthenticatedAppWebsiteAnalyticsRoute
+  '/_authenticated/app/website/investors': typeof AuthenticatedAppWebsiteInvestorsRoute
+  '/_authenticated/app/website/subscriptions': typeof AuthenticatedAppWebsiteSubscriptionsRoute
   '/_authenticated/app/inquiries/': typeof AuthenticatedAppInquiriesIndexRoute
   '/_authenticated/app/properties/': typeof AuthenticatedAppPropertiesIndexRoute
+  '/_authenticated/app/admin/portal/activity': typeof AuthenticatedAppAdminPortalActivityRoute
+  '/_authenticated/app/admin/portal/announcements': typeof AuthenticatedAppAdminPortalAnnouncementsRoute
+  '/_authenticated/app/admin/portal/documents': typeof AuthenticatedAppAdminPortalDocumentsRoute
+  '/_authenticated/app/admin/portal/properties': typeof AuthenticatedAppAdminPortalPropertiesRoute
+  '/_authenticated/app/admin/portal/resources': typeof AuthenticatedAppAdminPortalResourcesRoute
+  '/_authenticated/app/website/inquiries/$country': typeof AuthenticatedAppWebsiteInquiriesCountryRoute
+  '/_authenticated/app/website/inquiries/': typeof AuthenticatedAppWebsiteInquiriesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -408,11 +528,13 @@ export interface FileRouteTypes {
     | '/app/training'
     | '/app/users'
     | '/app/wallet'
+    | '/app/website-inquiries'
     | '/app/work-log'
     | '/app/'
     | '/app/admin/commission'
     | '/app/admin/countries'
     | '/app/admin/email-requests'
+    | '/app/admin/investors'
     | '/app/admin/onboarding'
     | '/app/admin/training'
     | '/app/appointments/$appointmentId'
@@ -420,8 +542,18 @@ export interface FileRouteTypes {
     | '/app/properties/$propertyId'
     | '/app/tasks/$taskId'
     | '/app/training/$moduleId'
+    | '/app/website/analytics'
+    | '/app/website/investors'
+    | '/app/website/subscriptions'
     | '/app/inquiries/'
     | '/app/properties/'
+    | '/app/admin/portal/activity'
+    | '/app/admin/portal/announcements'
+    | '/app/admin/portal/documents'
+    | '/app/admin/portal/properties'
+    | '/app/admin/portal/resources'
+    | '/app/website/inquiries/$country'
+    | '/app/website/inquiries/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -446,11 +578,13 @@ export interface FileRouteTypes {
     | '/app/training'
     | '/app/users'
     | '/app/wallet'
+    | '/app/website-inquiries'
     | '/app/work-log'
     | '/app'
     | '/app/admin/commission'
     | '/app/admin/countries'
     | '/app/admin/email-requests'
+    | '/app/admin/investors'
     | '/app/admin/onboarding'
     | '/app/admin/training'
     | '/app/appointments/$appointmentId'
@@ -458,8 +592,18 @@ export interface FileRouteTypes {
     | '/app/properties/$propertyId'
     | '/app/tasks/$taskId'
     | '/app/training/$moduleId'
+    | '/app/website/analytics'
+    | '/app/website/investors'
+    | '/app/website/subscriptions'
     | '/app/inquiries'
     | '/app/properties'
+    | '/app/admin/portal/activity'
+    | '/app/admin/portal/announcements'
+    | '/app/admin/portal/documents'
+    | '/app/admin/portal/properties'
+    | '/app/admin/portal/resources'
+    | '/app/website/inquiries/$country'
+    | '/app/website/inquiries'
   id:
     | '__root__'
     | '/'
@@ -486,11 +630,13 @@ export interface FileRouteTypes {
     | '/_authenticated/app/training'
     | '/_authenticated/app/users'
     | '/_authenticated/app/wallet'
+    | '/_authenticated/app/website-inquiries'
     | '/_authenticated/app/work-log'
     | '/_authenticated/app/'
     | '/_authenticated/app/admin/commission'
     | '/_authenticated/app/admin/countries'
     | '/_authenticated/app/admin/email-requests'
+    | '/_authenticated/app/admin/investors'
     | '/_authenticated/app/admin/onboarding'
     | '/_authenticated/app/admin/training'
     | '/_authenticated/app/appointments/$appointmentId'
@@ -498,8 +644,18 @@ export interface FileRouteTypes {
     | '/_authenticated/app/properties/$propertyId'
     | '/_authenticated/app/tasks/$taskId'
     | '/_authenticated/app/training/$moduleId'
+    | '/_authenticated/app/website/analytics'
+    | '/_authenticated/app/website/investors'
+    | '/_authenticated/app/website/subscriptions'
     | '/_authenticated/app/inquiries/'
     | '/_authenticated/app/properties/'
+    | '/_authenticated/app/admin/portal/activity'
+    | '/_authenticated/app/admin/portal/announcements'
+    | '/_authenticated/app/admin/portal/documents'
+    | '/_authenticated/app/admin/portal/properties'
+    | '/_authenticated/app/admin/portal/resources'
+    | '/_authenticated/app/website/inquiries/$country'
+    | '/_authenticated/app/website/inquiries/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -685,6 +841,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppWalletRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/website-inquiries': {
+      id: '/_authenticated/app/website-inquiries'
+      path: '/website-inquiries'
+      fullPath: '/app/website-inquiries'
+      preLoaderRoute: typeof AuthenticatedAppWebsiteInquiriesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/work-log': {
       id: '/_authenticated/app/work-log'
       path: '/work-log'
@@ -711,6 +874,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/email-requests'
       fullPath: '/app/admin/email-requests'
       preLoaderRoute: typeof AuthenticatedAppAdminEmailRequestsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/admin/investors': {
+      id: '/_authenticated/app/admin/investors'
+      path: '/admin/investors'
+      fullPath: '/app/admin/investors'
+      preLoaderRoute: typeof AuthenticatedAppAdminInvestorsRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/admin/onboarding': {
@@ -775,6 +945,76 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/training/$moduleId'
       preLoaderRoute: typeof AuthenticatedAppTrainingModuleIdRouteImport
       parentRoute: typeof AuthenticatedAppTrainingRoute
+    }
+    '/_authenticated/app/website/analytics': {
+      id: '/_authenticated/app/website/analytics'
+      path: '/website/analytics'
+      fullPath: '/app/website/analytics'
+      preLoaderRoute: typeof AuthenticatedAppWebsiteAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/website/investors': {
+      id: '/_authenticated/app/website/investors'
+      path: '/website/investors'
+      fullPath: '/app/website/investors'
+      preLoaderRoute: typeof AuthenticatedAppWebsiteInvestorsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/website/subscriptions': {
+      id: '/_authenticated/app/website/subscriptions'
+      path: '/website/subscriptions'
+      fullPath: '/app/website/subscriptions'
+      preLoaderRoute: typeof AuthenticatedAppWebsiteSubscriptionsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/admin/portal/activity': {
+      id: '/_authenticated/app/admin/portal/activity'
+      path: '/admin/portal/activity'
+      fullPath: '/app/admin/portal/activity'
+      preLoaderRoute: typeof AuthenticatedAppAdminPortalActivityRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/admin/portal/announcements': {
+      id: '/_authenticated/app/admin/portal/announcements'
+      path: '/admin/portal/announcements'
+      fullPath: '/app/admin/portal/announcements'
+      preLoaderRoute: typeof AuthenticatedAppAdminPortalAnnouncementsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/admin/portal/documents': {
+      id: '/_authenticated/app/admin/portal/documents'
+      path: '/admin/portal/documents'
+      fullPath: '/app/admin/portal/documents'
+      preLoaderRoute: typeof AuthenticatedAppAdminPortalDocumentsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/admin/portal/properties': {
+      id: '/_authenticated/app/admin/portal/properties'
+      path: '/admin/portal/properties'
+      fullPath: '/app/admin/portal/properties'
+      preLoaderRoute: typeof AuthenticatedAppAdminPortalPropertiesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/admin/portal/resources': {
+      id: '/_authenticated/app/admin/portal/resources'
+      path: '/admin/portal/resources'
+      fullPath: '/app/admin/portal/resources'
+      preLoaderRoute: typeof AuthenticatedAppAdminPortalResourcesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/website/inquiries/': {
+      id: '/_authenticated/app/website/inquiries/'
+      path: '/website/inquiries'
+      fullPath: '/app/website/inquiries/'
+      preLoaderRoute: typeof AuthenticatedAppWebsiteInquiriesIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/website/inquiries/$country': {
+      id: '/_authenticated/app/website/inquiries/$country'
+      path: '/website/inquiries/$country'
+      fullPath: '/app/website/inquiries/$country'
+      preLoaderRoute: typeof AuthenticatedAppWebsiteInquiriesCountryRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
     }
   }
 }
@@ -843,17 +1083,29 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppTrainingRoute: typeof AuthenticatedAppTrainingRouteWithChildren
   AuthenticatedAppUsersRoute: typeof AuthenticatedAppUsersRoute
   AuthenticatedAppWalletRoute: typeof AuthenticatedAppWalletRoute
+  AuthenticatedAppWebsiteInquiriesRoute: typeof AuthenticatedAppWebsiteInquiriesRoute
   AuthenticatedAppWorkLogRoute: typeof AuthenticatedAppWorkLogRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppAdminCommissionRoute: typeof AuthenticatedAppAdminCommissionRoute
   AuthenticatedAppAdminCountriesRoute: typeof AuthenticatedAppAdminCountriesRoute
   AuthenticatedAppAdminEmailRequestsRoute: typeof AuthenticatedAppAdminEmailRequestsRoute
+  AuthenticatedAppAdminInvestorsRoute: typeof AuthenticatedAppAdminInvestorsRoute
   AuthenticatedAppAdminOnboardingRoute: typeof AuthenticatedAppAdminOnboardingRoute
   AuthenticatedAppAdminTrainingRoute: typeof AuthenticatedAppAdminTrainingRoute
   AuthenticatedAppInquiriesInquiryIdRoute: typeof AuthenticatedAppInquiriesInquiryIdRoute
   AuthenticatedAppPropertiesPropertyIdRoute: typeof AuthenticatedAppPropertiesPropertyIdRoute
+  AuthenticatedAppWebsiteAnalyticsRoute: typeof AuthenticatedAppWebsiteAnalyticsRoute
+  AuthenticatedAppWebsiteInvestorsRoute: typeof AuthenticatedAppWebsiteInvestorsRoute
+  AuthenticatedAppWebsiteSubscriptionsRoute: typeof AuthenticatedAppWebsiteSubscriptionsRoute
   AuthenticatedAppInquiriesIndexRoute: typeof AuthenticatedAppInquiriesIndexRoute
   AuthenticatedAppPropertiesIndexRoute: typeof AuthenticatedAppPropertiesIndexRoute
+  AuthenticatedAppAdminPortalActivityRoute: typeof AuthenticatedAppAdminPortalActivityRoute
+  AuthenticatedAppAdminPortalAnnouncementsRoute: typeof AuthenticatedAppAdminPortalAnnouncementsRoute
+  AuthenticatedAppAdminPortalDocumentsRoute: typeof AuthenticatedAppAdminPortalDocumentsRoute
+  AuthenticatedAppAdminPortalPropertiesRoute: typeof AuthenticatedAppAdminPortalPropertiesRoute
+  AuthenticatedAppAdminPortalResourcesRoute: typeof AuthenticatedAppAdminPortalResourcesRoute
+  AuthenticatedAppWebsiteInquiriesCountryRoute: typeof AuthenticatedAppWebsiteInquiriesCountryRoute
+  AuthenticatedAppWebsiteInquiriesIndexRoute: typeof AuthenticatedAppWebsiteInquiriesIndexRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
@@ -878,20 +1130,40 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppTrainingRoute: AuthenticatedAppTrainingRouteWithChildren,
   AuthenticatedAppUsersRoute: AuthenticatedAppUsersRoute,
   AuthenticatedAppWalletRoute: AuthenticatedAppWalletRoute,
+  AuthenticatedAppWebsiteInquiriesRoute: AuthenticatedAppWebsiteInquiriesRoute,
   AuthenticatedAppWorkLogRoute: AuthenticatedAppWorkLogRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppAdminCommissionRoute: AuthenticatedAppAdminCommissionRoute,
   AuthenticatedAppAdminCountriesRoute: AuthenticatedAppAdminCountriesRoute,
   AuthenticatedAppAdminEmailRequestsRoute:
     AuthenticatedAppAdminEmailRequestsRoute,
+  AuthenticatedAppAdminInvestorsRoute: AuthenticatedAppAdminInvestorsRoute,
   AuthenticatedAppAdminOnboardingRoute: AuthenticatedAppAdminOnboardingRoute,
   AuthenticatedAppAdminTrainingRoute: AuthenticatedAppAdminTrainingRoute,
   AuthenticatedAppInquiriesInquiryIdRoute:
     AuthenticatedAppInquiriesInquiryIdRoute,
   AuthenticatedAppPropertiesPropertyIdRoute:
     AuthenticatedAppPropertiesPropertyIdRoute,
+  AuthenticatedAppWebsiteAnalyticsRoute: AuthenticatedAppWebsiteAnalyticsRoute,
+  AuthenticatedAppWebsiteInvestorsRoute: AuthenticatedAppWebsiteInvestorsRoute,
+  AuthenticatedAppWebsiteSubscriptionsRoute:
+    AuthenticatedAppWebsiteSubscriptionsRoute,
   AuthenticatedAppInquiriesIndexRoute: AuthenticatedAppInquiriesIndexRoute,
   AuthenticatedAppPropertiesIndexRoute: AuthenticatedAppPropertiesIndexRoute,
+  AuthenticatedAppAdminPortalActivityRoute:
+    AuthenticatedAppAdminPortalActivityRoute,
+  AuthenticatedAppAdminPortalAnnouncementsRoute:
+    AuthenticatedAppAdminPortalAnnouncementsRoute,
+  AuthenticatedAppAdminPortalDocumentsRoute:
+    AuthenticatedAppAdminPortalDocumentsRoute,
+  AuthenticatedAppAdminPortalPropertiesRoute:
+    AuthenticatedAppAdminPortalPropertiesRoute,
+  AuthenticatedAppAdminPortalResourcesRoute:
+    AuthenticatedAppAdminPortalResourcesRoute,
+  AuthenticatedAppWebsiteInquiriesCountryRoute:
+    AuthenticatedAppWebsiteInquiriesCountryRoute,
+  AuthenticatedAppWebsiteInquiriesIndexRoute:
+    AuthenticatedAppWebsiteInquiriesIndexRoute,
 }
 
 const AuthenticatedAppRouteWithChildren =

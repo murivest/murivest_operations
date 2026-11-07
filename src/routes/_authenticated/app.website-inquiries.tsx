@@ -1,0 +1,577 @@
+import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { toast } from "sonner";
+
+import { supabase } from "@/integrations/supabase/client2";
+import {
+  Cell,
+  DataTable,
+  LoadingState,
+  PageHeader,
+  Row,
+  SearchInput,
+  StatusBadge,
+  statusTone,
+} from "@/components/app/ui-kit";
+import { formatDateTime } from "@/lib/format";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+export const Route = createFileRoute("/_authenticated/app/website-inquiries")({
+  component: WebsiteInquiriesPage,
+});
+
+const ALL = "all";
+
+const PERIODS = {
+  "7d": { label: "Last 7 days", days: 7 },
+  "28d": { label: "Last 28 days", days: 28 },
+  "3m": { label: "Last 3 months", days: 90 },
+  "6m": { label: "Last 6 months", days: 180 },
+  ytd: { label: "Year to date", days: null },
+  all: { label: "All time", days: null },
+} as const;
+
+type PeriodKey = keyof typeof PERIODS;
+
+type WebsiteInquiry = {
+  id: string;
+  source_created_at: string;
+  country_code: string;
+  status: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  reference: string;
+  investment_range: string | null;
+  property_type: string | null;
+};
+
+type WebsiteNotification = {
+  id: string;
+  is_read: boolean;
+  title?: string | null;
+  created_at?: string;
+};
+
+const COUNTRY_NAMES: Record<string, string> = {
+  KE: "Kenya",
+  GB: "United Kingdom",
+  US: "United States",
+  AE: "United Arab Emirates",
+  NG: "Nigeria",
+};
+
+const STATUS_TONE: Record<string, Parameters<typeof statusTone>[0]> = {
+  New: "info",
+  Unread: "info",
+  Contacted: "neutral",
+  Qualified: "success",
+  Converted: "success",
+  Lost: "danger",
+  Archived: "neutral",
+};
+
+function sinceDate(period: PeriodKey): string | null {
+  const now = new Date();
+  const config = PERIODS[period];
+
+  if (config.days !== null) {
+    return new Date(now.getTime() - config.days * 24 * 60 * 60 * 1000).toISOString();
+  }
+
+  if (period === "ytd") {
+    return new Date(now.getFullYear(), 0, 1).toISOString();
+  }
+
+  return null;
+}
+
+export function WebsiteInquiriesPage({ initialCountry = ALL }: { initialCountry?: string }) {
+  const queryClient = useQueryClient();
+
+  const [period, setPeriod] = useState<PeriodKey>("28d");
+  const [country, setCountry] = useState(initialCountry);
+  const [status, setStatus] = useState(ALL);
+  const [search, setSearch] = useState("");
+
+  // -------------------------------------------------------
+  // 1. FETCH WEBSITE INQUIRIES FROM PROJECT B
+  // -------------------------------------------------------
+
+  const {
+    data: inquiries = [],
+    isLoading,
+    isFetching,
+    isError,
+    error,
+    refetch,
+  } = useQuery<WebsiteInquiry[]>({
+    queryKey: ["website-inquiries"],
+
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("website_inquiries" as any)
+        .select(
+          "id, source_created_at, country_code, status, name, email, phone, reference, investment_range, property_type",
+        )
+        .order("source_created_at", { ascending: false });
+
+      if (error) {
+        console.error("Website inquiries fetch failed:", error);
+        throw error;
+      }
+
+      return (data ?? []) as unknown as WebsiteInquiry[];
+    },
+
+    staleTime: 30_000,
+    refetchOnWindowFocus: true,
+  });
+
+  // -------------------------------------------------------
+  // 2. FETCH WEBSITE NOTIFICATIONS FROM PROJECT B
+  // -------------------------------------------------------
+
+  const { data: notifications = [], isLoading: notificationsLoading } = useQuery<
+    WebsiteNotification[]
+  >({
+    queryKey: ["website-notifications"],
+
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("website_notifications" as any)
+        .select("id, is_read, title, created_at")
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      if (error) {
+        console.error("Website notifications fetch failed:", error);
+        throw error;
+      }
+
+      return (data ?? []) as unknown as WebsiteNotification[];
+    },
+
+    staleTime: 30_000,
+  });
+
+  // -------------------------------------------------------
+  // 3. SUPABASE REALTIME LISTENERS
+  // -------------------------------------------------------
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("murivest-website-inquiries-live")
+
+      // Listen for new synchronised website enquiries.
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "website_inquiries",
+        },
+        (payload) => {
+          console.info("New website inquiry received:", payload.new);
+
+          queryClient.invalidateQueries({
+            queryKey: ["website-inquiries"],
+          });
+
+          toast.success("New website enquiry received");
+        },
+      )
+
+      // Listen for changes to existing enquiries.
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "website_inquiries",
+        },
+        () => {
+          queryClient.invalidateQueries({
+            queryKey: ["website-inquiries"],
+          });
+        },
+      )
+
+      // Listen for new notifications.
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "website_notifications",
+        },
+        (payload) => {
+          queryClient.invalidateQueries({
+            queryKey: ["website-notifications"],
+          });
+
+          const notification = payload.new as {
+            title?: string;
+          };
+
+          toast.info(notification.title ?? "New website notification");
+        },
+      )
+
+      // Listen for notification read-status changes.
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "website_notifications",
+        },
+        () => {
+          queryClient.invalidateQueries({
+            queryKey: ["website-notifications"],
+          });
+        },
+      )
+
+      .subscribe((status) => {
+        console.info("Website Realtime status:", status);
+
+        if (status === "CHANNEL_ERROR") {
+          console.error("Could not establish website Realtime connection.");
+        }
+
+        if (status === "TIMED_OUT") {
+          console.warn("Website Realtime connection timed out.");
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  // -------------------------------------------------------
+  // 4. MARK NOTIFICATIONS AS READ
+  // -------------------------------------------------------
+
+  const markAllRead = async () => {
+    const unreadIds = notifications
+      .filter((notification) => !notification.is_read)
+      .map((notification) => notification.id);
+
+    if (unreadIds.length === 0) return;
+
+    const { error } = await supabase
+      .from("website_notifications" as any)
+      .update({ is_read: true })
+      .in("id", unreadIds);
+
+    if (error) {
+      console.error("Mark notifications as read failed:", error);
+      toast.error("Could not mark notifications as read.");
+      return;
+    }
+
+    await queryClient.invalidateQueries({
+      queryKey: ["website-notifications"],
+    });
+
+    toast.success("Notifications marked as read.");
+  };
+
+  // -------------------------------------------------------
+  // 5. PERIOD FILTERING AND STATISTICS
+  // -------------------------------------------------------
+
+  const stats = useMemo(() => {
+    const since = sinceDate(period);
+
+    const inPeriod = inquiries.filter((inquiry) => {
+      return !since || new Date(inquiry.source_created_at).getTime() >= new Date(since).getTime();
+    });
+
+    const total = inPeriod.length;
+
+    const byCountry = new Map<string, number>();
+
+    for (const inquiry of inPeriod) {
+      const code = inquiry.country_code;
+
+      byCountry.set(code, (byCountry.get(code) ?? 0) + 1);
+    }
+
+    const countries = [...byCountry.entries()]
+      .map(([code, count]) => ({
+        code,
+        name: COUNTRY_NAMES[code] ?? code,
+        count,
+        share: total ? Math.round((count / total) * 100) : 0,
+      }))
+      .sort((a, b) => b.count - a.count);
+
+    const unread = notifications.filter((notification) => !notification.is_read).length;
+
+    return {
+      total,
+      countries,
+      unread,
+      top: countries[0],
+    };
+  }, [inquiries, notifications, period]);
+
+  // -------------------------------------------------------
+  // 6. SEARCH, COUNTRY AND STATUS FILTERS
+  // -------------------------------------------------------
+
+  const rows = useMemo(() => {
+    const since = sinceDate(period);
+    const normalizedSearch = search.trim().toLowerCase();
+
+    return inquiries
+      .filter((inquiry) => {
+        return !since || new Date(inquiry.source_created_at).getTime() >= new Date(since).getTime();
+      })
+      .filter((inquiry) => {
+        return country === ALL || inquiry.country_code === country;
+      })
+      .filter((inquiry) => {
+        return status === ALL || inquiry.status === status;
+      })
+      .filter((inquiry) => {
+        if (!normalizedSearch) return true;
+
+        return [inquiry.name, inquiry.email, inquiry.phone, inquiry.reference]
+          .filter(Boolean)
+          .some((value) => value!.toLowerCase().includes(normalizedSearch));
+      });
+  }, [inquiries, period, country, status, search]);
+
+  // -------------------------------------------------------
+  // 7. DASHBOARD
+  // -------------------------------------------------------
+
+  return (
+    <div className="space-y-5">
+      <PageHeader
+        title="Website Inquiries"
+        description="Live enquiries from murivest.com across all country pages, delivered in real time."
+        actions={
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
+              {isFetching ? "Refreshing..." : "Refresh"}
+            </Button>
+
+            {stats.unread > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={markAllRead}
+                disabled={notificationsLoading}
+              >
+                Mark all read ({stats.unread})
+              </Button>
+            )}
+          </div>
+        }
+      />
+
+      {/* DATABASE ERROR */}
+      {isError && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+          <p className="font-medium text-destructive">Unable to load website enquiries.</p>
+
+          <p className="mt-1 text-sm text-muted-foreground">
+            {error instanceof Error ? error.message : "An unexpected database error occurred."}
+          </p>
+
+          <Button className="mt-3" variant="outline" size="sm" onClick={() => refetch()}>
+            Try again
+          </Button>
+        </div>
+      )}
+
+      {/* FILTERS */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Select value={period} onValueChange={(value) => setPeriod(value as PeriodKey)}>
+          <SelectTrigger className="w-44">
+            <SelectValue />
+          </SelectTrigger>
+
+          <SelectContent>
+            {Object.entries(PERIODS).map(([key, item]) => (
+              <SelectItem key={key} value={key}>
+                {item.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={country} onValueChange={setCountry}>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Country" />
+          </SelectTrigger>
+
+          <SelectContent>
+            <SelectItem value={ALL}>All countries</SelectItem>
+
+            {Object.entries(COUNTRY_NAMES).map(([code, name]) => (
+              <SelectItem key={code} value={code}>
+                {name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={status} onValueChange={setStatus}>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+
+          <SelectContent>
+            <SelectItem value={ALL}>All statuses</SelectItem>
+
+            {["New", "Unread", "Contacted", "Qualified", "Converted", "Lost", "Archived"].map(
+              (item) => (
+                <SelectItem key={item} value={item}>
+                  {item}
+                </SelectItem>
+              ),
+            )}
+          </SelectContent>
+        </Select>
+
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder="Search name, email, reference…"
+        />
+      </div>
+
+      {/* STATISTICS */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className="rounded-lg border bg-card p-5">
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">
+            Inquiries · {PERIODS[period].label}
+          </p>
+
+          <p className="mt-2 text-3xl font-semibold">{stats.total}</p>
+        </div>
+
+        <div className="rounded-lg border bg-card p-5">
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">
+            Unread notifications
+          </p>
+
+          <p className="mt-2 text-3xl font-semibold">{stats.unread}</p>
+        </div>
+
+        <div className="rounded-lg border bg-card p-5">
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Top country</p>
+
+          <p className="mt-2 text-3xl font-semibold">{stats.top ? stats.top.name : "—"}</p>
+
+          {stats.top && (
+            <p className="text-xs text-muted-foreground">
+              {stats.top.count} inquiries ({stats.top.share}%)
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* COUNTRY PERFORMANCE */}
+      <div className="rounded-lg border bg-card">
+        <div className="border-b px-5 py-3 text-sm font-medium">
+          Performance by country · {PERIODS[period].label}
+        </div>
+
+        {isLoading ? (
+          <LoadingState label="Loading country performance…" />
+        ) : stats.countries.length === 0 ? (
+          <p className="px-5 py-6 text-sm text-muted-foreground">
+            No website inquiries in this period yet.
+          </p>
+        ) : (
+          <DataTable columns={["Country", "Inquiries", "Share"]} empty={false}>
+            {stats.countries.map((item) => (
+              <Row key={item.code}>
+                <Cell className="font-medium">
+                  <Link
+                    to="/app/website/inquiries/$country"
+                    params={{ country: item.code }}
+                    className="underline-offset-4 hover:underline"
+                  >
+                    {item.name}
+                  </Link>
+                </Cell>
+
+                <Cell>{item.count}</Cell>
+
+                <Cell>
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-40 overflow-hidden rounded bg-muted">
+                      <div className="h-full bg-[#0B3D2E]" style={{ width: `${item.share}%` }} />
+                    </div>
+
+                    <span className="text-xs text-muted-foreground">{item.share}%</span>
+                  </div>
+                </Cell>
+              </Row>
+            ))}
+          </DataTable>
+        )}
+      </div>
+
+      {/* WEBSITE INQUIRIES */}
+      {isLoading ? (
+        <LoadingState label="Loading website inquiries…" />
+      ) : (
+        <DataTable
+          columns={["Received", "Reference", "Investor", "Country", "Range / Type", "Status"]}
+          empty={rows.length === 0}
+        >
+          {rows.map((inquiry) => (
+            <Row key={inquiry.id}>
+              <Cell muted className="whitespace-nowrap text-xs">
+                {formatDateTime(inquiry.source_created_at)}
+              </Cell>
+
+              <Cell>
+                <span className="font-mono text-xs">{inquiry.reference}</span>
+              </Cell>
+
+              <Cell>
+                <p className="font-medium">{inquiry.name}</p>
+
+                <p className="text-xs text-muted-foreground">{inquiry.email}</p>
+
+                {inquiry.phone && <p className="text-xs text-muted-foreground">{inquiry.phone}</p>}
+              </Cell>
+
+              <Cell muted>{COUNTRY_NAMES[inquiry.country_code] ?? inquiry.country_code}</Cell>
+
+              <Cell muted>
+                {inquiry.investment_range ?? "—"}
+
+                {inquiry.property_type && <p className="text-xs">{inquiry.property_type}</p>}
+              </Cell>
+
+              <Cell>
+                <StatusBadge tone={STATUS_TONE[inquiry.status] ?? "neutral"}>
+                  {inquiry.status}
+                </StatusBadge>
+              </Cell>
+            </Row>
+          ))}
+        </DataTable>
+      )}
+    </div>
+  );
+}
