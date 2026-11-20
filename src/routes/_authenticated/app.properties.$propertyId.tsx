@@ -1,13 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute, useParams } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { flushEmailQueue } from "@/lib/email-dispatch";
 import { PROPERTY_STATUS, PROPERTY_TYPES, REVIEW_STATUS, optionsOf } from "@/lib/constants";
-import { formatDateTime, formatMoney, formatNumber, friendlyError, text } from "@/lib/format";
+import {
+  formatDateTime,
+  formatMoney,
+  formatNumber,
+  friendlyError,
+  text,
+} from "@/lib/format";
 import {
   DetailItem,
   EmptyState,
@@ -33,12 +39,79 @@ export const Route = createFileRoute("/_authenticated/app/properties/$propertyId
   component: PropertyDetailPage,
 });
 
+// Every field is a string in the form so we can round-trip nulls cleanly
+// and don't have to juggle number/string unions per keystroke.
+interface PropertyForm {
+  name: string;
+  reference: string;
+  property_type: string;
+  location: string;
+  city: string;
+  county: string;
+  address: string;
+  tenure: string;
+  description: string;
+  investment_summary: string;
+  investment_highlights: string;
+  location_advantages: string;
+  asset_characteristics: string;
+  income_information: string;
+  seller_information: string;
+  internal_notes: string;
+  internal_valuation: string;
+  primary_image_url: string;
+  price: string;
+  annual_income: string;
+  monthly_income: string;
+  yield_percent: string;
+  occupancy: string;
+  land_size: string;
+  building_size: string;
+  units: string;
+}
+
+const EMPTY_FORM: PropertyForm = {
+  name: "",
+  reference: "",
+  property_type: "Warehouse",
+  location: "",
+  city: "",
+  county: "",
+  address: "",
+  tenure: "",
+  description: "",
+  investment_summary: "",
+  investment_highlights: "",
+  location_advantages: "",
+  asset_characteristics: "",
+  income_information: "",
+  seller_information: "",
+  internal_notes: "",
+  internal_valuation: "",
+  primary_image_url: "",
+  price: "",
+  annual_income: "",
+  monthly_income: "",
+  yield_percent: "",
+  occupancy: "",
+  land_size: "",
+  building_size: "",
+  units: "",
+};
+
 function PropertyDetailPage() {
-  const { propertyId } = useParams({ from: "/_authenticated/app/properties/$propertyId" });
+  const { propertyId } = useParams({
+    from: "/_authenticated/app/properties/$propertyId",
+  });
   const { can } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: property, isLoading } = useQuery({
+  const {
+    data: property,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["property", propertyId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -64,38 +137,23 @@ function PropertyDetailPage() {
     },
   });
 
-  const [form, setForm] = useState<Record<string, string>>({});
+  const [form, setForm] = useState<PropertyForm>(EMPTY_FORM);
+  const [dirty, setDirty] = useState(false);
+
+  // Reset the form whenever we land on a different property (or refetch it).
   useEffect(() => {
     if (!property) return;
-    setForm({
-      name: property.name ?? "",
-      reference: property.reference ?? "",
-      property_type: property.property_type ?? "Warehouse",
-      location: property.location ?? "",
-      city: property.city ?? "",
-      county: property.county ?? "",
-      address: property.address ?? "",
-      tenure: property.tenure ?? "",
-      description: property.description ?? "",
-      investment_summary: property.investment_summary ?? "",
-      investment_highlights: property.investment_highlights ?? "",
-      location_advantages: property.location_advantages ?? "",
-      asset_characteristics: property.asset_characteristics ?? "",
-      income_information: property.income_information ?? "",
-      seller_information: property.seller_information ?? "",
-      internal_notes: property.internal_notes ?? "",
-      internal_valuation: property.internal_valuation ?? "",
-      primary_image_url: property.primary_image_url ?? "",
-      price: property.price?.toString() ?? "",
-      annual_income: property.annual_income?.toString() ?? "",
-      monthly_income: property.monthly_income?.toString() ?? "",
-      yield_percent: property.yield_percent?.toString() ?? "",
-      occupancy: property.occupancy?.toString() ?? "",
-      land_size: property.land_size ?? "",
-      building_size: property.building_size ?? "",
-      units: property.units?.toString() ?? "",
-    });
+    setForm(formFromProperty(property));
+    setDirty(false);
   }, [property]);
+
+  const updateField = useCallback(
+    <K extends keyof PropertyForm>(key: K, value: PropertyForm[K]) => {
+      setForm((prev) => ({ ...prev, [key]: value }));
+      setDirty(true);
+    },
+    [],
+  );
 
   const canEdit = can("properties.edit");
   const canFinancials = can("properties.edit.financials");
@@ -104,40 +162,54 @@ function PropertyDetailPage() {
   const canPublish = can("properties.publish");
   const canSeeConfidential = can("properties.view.confidential");
 
+  // Invalidate only what these mutations actually touch. The old
+  // queryClient.invalidateQueries() refetched every query in the app.
+  const invalidateProperty = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["properties"] });
+    queryClient.invalidateQueries({ queryKey: ["property", propertyId] });
+  }, [queryClient, propertyId]);
+
   const save = useMutation({
     mutationFn: async () => {
+      if (!form.name.trim()) {
+        throw new Error("Property name is required.");
+      }
+
       const patch: Record<string, unknown> = {
-        name: form["name"],
-        reference: form["reference"] || null,
-        property_type: form["property_type"] || null,
-        location: form["location"] || null,
-        city: form["city"] || null,
-        county: form["county"] || null,
-        address: form["address"] || null,
-        tenure: form["tenure"] || null,
-        description: form["description"] || null,
-        investment_summary: form["investment_summary"] || null,
-        investment_highlights: form["investment_highlights"] || null,
-        location_advantages: form["location_advantages"] || null,
-        asset_characteristics: form["asset_characteristics"] || null,
-        income_information: form["income_information"] || null,
-        primary_image_url: form["primary_image_url"] || null,
-        units: form["units"] ? Number(form["units"]) : null,
+        name: form.name.trim(),
+        reference: form.reference.trim() || null,
+        property_type: form.property_type || null,
+        location: form.location.trim() || null,
+        city: form.city.trim() || null,
+        county: form.county.trim() || null,
+        address: form.address.trim() || null,
+        tenure: form.tenure.trim() || null,
+        description: form.description.trim() || null,
+        investment_summary: form.investment_summary.trim() || null,
+        investment_highlights: form.investment_highlights.trim() || null,
+        location_advantages: form.location_advantages.trim() || null,
+        asset_characteristics: form.asset_characteristics.trim() || null,
+        income_information: form.income_information.trim() || null,
+        primary_image_url: form.primary_image_url.trim() || null,
+        units: form.units ? Number(form.units) : null,
       };
+
       if (canFinancials) {
-        patch["price"] = form["price"] ? Number(form["price"]) : null;
-        patch["annual_income"] = form["annual_income"] ? Number(form["annual_income"]) : null;
-        patch["monthly_income"] = form["monthly_income"] ? Number(form["monthly_income"]) : null;
-        patch["yield_percent"] = form["yield_percent"] ? Number(form["yield_percent"]) : null;
-        patch["occupancy"] = form["occupancy"] ? Number(form["occupancy"]) : null;
-        patch["land_size"] = form["land_size"] || null;
-        patch["building_size"] = form["building_size"] || null;
+        patch["price"] = form.price ? Number(form.price) : null;
+        patch["annual_income"] = form.annual_income ? Number(form.annual_income) : null;
+        patch["monthly_income"] = form.monthly_income ? Number(form.monthly_income) : null;
+        patch["yield_percent"] = form.yield_percent ? Number(form.yield_percent) : null;
+        patch["occupancy"] = form.occupancy ? Number(form.occupancy) : null;
+        patch["land_size"] = form.land_size.trim() || null;
+        patch["building_size"] = form.building_size.trim() || null;
       }
+
       if (canSeeConfidential) {
-        patch["seller_information"] = form["seller_information"] || null;
-        patch["internal_notes"] = form["internal_notes"] || null;
-        patch["internal_valuation"] = form["internal_valuation"] || null;
+        patch["seller_information"] = form.seller_information.trim() || null;
+        patch["internal_notes"] = form.internal_notes.trim() || null;
+        patch["internal_valuation"] = form.internal_valuation.trim() || null;
       }
+
       const { error } = await supabase
         .from("properties")
         .update(patch as never)
@@ -146,7 +218,8 @@ function PropertyDetailPage() {
     },
     onSuccess: () => {
       toast.success("Property saved.");
-      queryClient.invalidateQueries();
+      setDirty(false);
+      invalidateProperty();
     },
     onError: (e) => toast.error(friendlyError(e, "Unable to save the property.")),
   });
@@ -155,11 +228,15 @@ function PropertyDetailPage() {
     mutationFn: async (status: string) => {
       const { data: auth } = await supabase.auth.getUser();
       const patch: Record<string, unknown> = { status };
+
       if (status === "approved") {
-        patch["approved_at"] = new Date().toISOString();
-        patch["approved_by"] = auth.user?.id ?? null;
+        patch['approved_at'] = new Date().toISOString();
+        patch['approved_by'] = auth.user?.id ?? null;
       }
-      if (status === "published") patch["published_at"] = new Date().toISOString();
+      if (status === "published") {
+        patch['published_at'] = new Date().toISOString();
+      }
+
       const { error } = await supabase
         .from("properties")
         .update(patch as never)
@@ -168,7 +245,7 @@ function PropertyDetailPage() {
     },
     onSuccess: () => {
       toast.success("Property status updated.");
-      queryClient.invalidateQueries();
+      invalidateProperty();
     },
     onError: (e) => toast.error(friendlyError(e, "Unable to change the status.")),
   });
@@ -180,20 +257,29 @@ function PropertyDetailPage() {
     mutationFn: async () => {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) throw new Error("Not signed in.");
-      const { error } = await supabase.from("property_reviews").insert({
+
+      const { error: insertError } = await supabase.from("property_reviews").insert({
         property_id: propertyId,
         reviewed_by: auth.user.id,
         status: reviewStatus as never,
-        comment: reviewComment || null,
+        comment: reviewComment.trim() || null,
       });
-      if (error) throw error;
+      if (insertError) throw insertError;
+
+      // Preserve the existing workflow: "verified" sends the property back to
+      // internal_review (waiting on approver), "needs_correction" sends it to
+      // needs_update. If you want re-reviews on approved/published docs to be
+      // non-destructive, change nextStatus to fall through to property.status.
+      const nextStatus =
+        reviewStatus === "needs_correction" ? "needs_update" : "internal_review";
+
       const { error: updateError } = await supabase
         .from("properties")
         .update({
           review_status: reviewStatus as never,
           reviewed_at: new Date().toISOString(),
           reviewed_by: auth.user.id,
-          status: reviewStatus === "needs_correction" ? "needs_update" : "internal_review",
+          status: nextStatus,
         } as never)
         .eq("id", propertyId);
       if (updateError) throw updateError;
@@ -201,13 +287,30 @@ function PropertyDetailPage() {
     onSuccess: () => {
       toast.success("Review recorded.");
       setReviewComment("");
-      queryClient.invalidateQueries();
-      void flushEmailQueue();
+      invalidateProperty();
+      queryClient.invalidateQueries({
+        queryKey: ["property-reviews", propertyId],
+      });
+      // Fire-and-forget, but catch so a queue failure doesn't become an
+      // unhandled rejection in the console.
+      flushEmailQueue().catch((e) =>
+        console.error("Email queue flush failed:", e),
+      );
     },
     onError: (e) => toast.error(friendlyError(e, "Unable to record the review.")),
   });
 
   if (isLoading) return <LoadingState label="Loading property…" />;
+
+  if (isError) {
+    return (
+      <EmptyState
+        message="Could not load property"
+        hint={(error as Error)?.message ?? "Try refreshing the page."}
+      />
+    );
+  }
+
   if (!property) {
     return (
       <EmptyState
@@ -217,30 +320,36 @@ function PropertyDetailPage() {
     );
   }
 
-  const input = (key: string, label: string, disabled = false) => (
+  const statusLabel = PROPERTY_STATUS[property.status] ?? property.status;
+  const reviewLabel = property.review_status
+    ? REVIEW_STATUS[property.review_status] ?? property.review_status
+    : null;
+
+  const input = (key: keyof PropertyForm, label: string) => (
     <Field label={label}>
       <Input
-        disabled={disabled}
-        value={form[key] ?? ""}
-        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+        value={form[key]}
+        onChange={(e) => updateField(key, e.target.value)}
       />
     </Field>
   );
 
-  const area = (key: string, label: string, disabled = false) => (
+  const area = (key: keyof PropertyForm, label: string) => (
     <Field label={label} className="sm:col-span-2">
       <Textarea
         rows={3}
-        disabled={disabled}
-        value={form[key] ?? ""}
-        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+        value={form[key]}
+        onChange={(e) => updateField(key, e.target.value)}
       />
     </Field>
   );
 
   return (
     <div className="space-y-5">
-      <Link to="/app/properties" className="text-xs text-muted-foreground hover:underline">
+      <Link
+        to="/app/properties"
+        className="text-xs text-muted-foreground hover:underline"
+      >
         ← Back to properties
       </Link>
 
@@ -250,22 +359,50 @@ function PropertyDetailPage() {
         actions={
           <div className="flex flex-wrap gap-2">
             {canEdit && property.status === "draft" ? (
-              <Button size="sm" variant="outline" onClick={() => setStatus.mutate("internal_review")}>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={setStatus.isPending}
+                onClick={() => setStatus.mutate("internal_review")}
+              >
                 Submit for review
               </Button>
             ) : null}
-            {canApprove && (property.status === "internal_review" || property.status === "needs_update") ? (
-              <Button size="sm" onClick={() => setStatus.mutate("approved")}>
+            {canApprove &&
+            (property.status === "internal_review" ||
+              property.status === "needs_update") ? (
+              <Button
+                size="sm"
+                disabled={setStatus.isPending}
+                onClick={() => setStatus.mutate("approved")}
+              >
                 Approve
               </Button>
             ) : null}
             {canPublish && property.status === "approved" ? (
-              <Button size="sm" onClick={() => setStatus.mutate("published")}>
+              <Button
+                size="sm"
+                disabled={setStatus.isPending}
+                onClick={() => setStatus.mutate("published")}
+              >
                 Publish
               </Button>
             ) : null}
             {canEdit && property.status !== "archived" ? (
-              <Button size="sm" variant="outline" onClick={() => setStatus.mutate("archived")}>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={setStatus.isPending}
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      "Archive this property? It will be hidden from the active register.",
+                    )
+                  ) {
+                    setStatus.mutate("archived");
+                  }
+                }}
+              >
                 Archive
               </Button>
             ) : null}
@@ -274,13 +411,14 @@ function PropertyDetailPage() {
       />
 
       <div className="flex flex-wrap items-center gap-2">
-        <StatusBadge tone={statusTone(property.status)}>
-          {PROPERTY_STATUS[property.status]}
-        </StatusBadge>
-        {property.review_status ? (
-          <StatusBadge tone={statusTone(property.review_status)}>
-            {REVIEW_STATUS[property.review_status]}
+        <StatusBadge tone={statusTone(property.status)}>{statusLabel}</StatusBadge>
+        {reviewLabel ? (
+          <StatusBadge tone={statusTone(property.review_status ?? property.status)}>
+            {reviewLabel}
           </StatusBadge>
+        ) : null}
+        {dirty ? (
+          <span className="text-xs font-medium text-amber-600">Unsaved changes</span>
         ) : null}
         <span className="text-xs text-muted-foreground">
           Updated {formatDateTime(property.updated_at)}
@@ -295,8 +433,8 @@ function PropertyDetailPage() {
               {input("reference", "Reference")}
               <Field label="Type">
                 <Select
-                  value={form["property_type"] ?? ""}
-                  onValueChange={(v) => setForm({ ...form, property_type: v })}
+                  value={form.property_type}
+                  onValueChange={(v) => updateField("property_type", v)}
                   disabled={!canEdit}
                 >
                   <SelectTrigger>
@@ -347,7 +485,10 @@ function PropertyDetailPage() {
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
-                <DetailItem label="Price" value={formatMoney(property.price, property.price_currency ?? "KES")} />
+                <DetailItem
+                  label="Price"
+                  value={formatMoney(property.price, property.price_currency ?? "KES")}
+                />
                 <DetailItem label="Annual income" value={formatMoney(property.annual_income)} />
                 <DetailItem label="Monthly income" value={formatMoney(property.monthly_income)} />
                 <DetailItem label="Yield" value={formatNumber(property.yield_percent, "%")} />
@@ -359,7 +500,10 @@ function PropertyDetailPage() {
           </Panel>
 
           {canSeeConfidential ? (
-            <Panel title="Confidential" description="Never shown to clients or public listings.">
+            <Panel
+              title="Confidential"
+              description="Never shown to clients or public listings."
+            >
               <fieldset disabled={!canEdit} className="grid gap-4 sm:grid-cols-2">
                 {area("seller_information", "Seller information")}
                 {area("internal_valuation", "Internal valuation")}
@@ -369,9 +513,25 @@ function PropertyDetailPage() {
           ) : null}
 
           {canEdit ? (
-            <Button onClick={() => save.mutate()} disabled={save.isPending}>
-              {save.isPending ? "Saving…" : "Save changes"}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => save.mutate()}
+                disabled={save.isPending || !dirty}
+              >
+                {save.isPending ? "Saving…" : "Save changes"}
+              </Button>
+              {dirty && !save.isPending ? (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setForm(formFromProperty(property));
+                    setDirty(false);
+                  }}
+                >
+                  Discard
+                </Button>
+              ) : null}
+            </div>
           ) : null}
         </div>
 
@@ -419,7 +579,9 @@ function PropertyDetailPage() {
               <ul className="space-y-3">
                 {(reviews ?? []).map((r) => (
                   <li key={r.id} className="border-l-2 border-border pl-3">
-                    <StatusBadge tone={statusTone(r.status)}>{REVIEW_STATUS[r.status]}</StatusBadge>
+                    <StatusBadge tone={statusTone(r.status)}>
+                      {REVIEW_STATUS[r.status] ?? r.status}
+                    </StatusBadge>
                     <p className="mt-1 text-xs text-muted-foreground">{text(r.comment)}</p>
                     <p className="mt-0.5 text-[11px] text-muted-foreground">
                       {formatDateTime(r.created_at)}
@@ -433,4 +595,36 @@ function PropertyDetailPage() {
       </div>
     </div>
   );
+}
+
+// Extracted so the reset paths (mount + Discard button) stay in sync.
+function formFromProperty(p: Record<string, any>): PropertyForm {
+  return {
+    name: p['name'] ?? "",
+    reference: p['reference'] ?? "",
+    property_type: p['property_type'] ?? "Warehouse",
+    location: p['location'] ?? "",
+    city: p['city'] ?? "",
+    county: p['county'] ?? "",
+    address: p['address'] ?? "",
+    tenure: p['tenure'] ?? "",
+    description: p['description'] ?? "",
+    investment_summary: p['investment_summary'] ?? "",
+    investment_highlights: p['investment_highlights'] ?? "",
+    location_advantages: p['location_advantages'] ?? "",
+    asset_characteristics: p['asset_characteristics'] ?? "",
+    income_information: p['income_information'] ?? "",
+    seller_information: p['seller_information'] ?? "",
+    internal_notes: p['internal_notes'] ?? "",
+    internal_valuation: p['internal_valuation'] ?? "",
+    primary_image_url: p['primary_image_url'] ?? "",
+    price: p['price']?.toString() ?? "",
+    annual_income: p['annual_income']?.toString() ?? "",
+    monthly_income: p['monthly_income']?.toString() ?? "",
+    yield_percent: p['yield_percent']?.toString() ?? "",
+    occupancy: p['occupancy']?.toString() ?? "",
+    land_size: p['land_size'] ?? "",
+    building_size: p['building_size'] ?? "",
+    units: p['units']?.toString() ?? "",
+  };
 }

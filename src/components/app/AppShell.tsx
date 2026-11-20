@@ -236,9 +236,30 @@ const NAV: NavGroup[] = [
     ],
   },
   {
-    heading: "Reports",
+    heading: "Murivest Website",
     items: [
-      { to: "/app/reports", label: "Daily Reports", icon: FileText, permission: "reports.view" },
+      { to: "/app/website-inquiries", label: "Website Inquiries", icon: ClipboardList, permission: "website_inquiries.view" },
+    ],
+
+  },
+  {
+    heading: "Murivest Auctions",
+    items: [
+      { to: "/app/auctions", label: "Auctions back-office", icon: ClipboardList, permission: "auctions.view" },
+      { to: "/app/auctions/properties", label: "Auction properties", icon: Building2, permission: "auctions.view" },
+    ],
+  },
+  {
+    heading: "Lettings",
+    items: [
+      { to: "/app/lettings", label: "Lettings", icon: Building2, permission: "lettings.view" },
+    ],
+  },
+  {
+    heading: "Investor Portal",
+    items: [
+      { to: "/app/admin/investors-portal", label: "Portal admin", icon: Users, permission: "users.view" },
+      { to: "/app/admin/investors-studio", label: "Studio", icon: FileText, permission: "users.view" },
     ],
   },
   {

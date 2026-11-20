@@ -1,17 +1,22 @@
-import { PageHeader, Panel, StatusBadge } from "@/components/app/ui-kit";
+import type { ReactNode } from "react";
 
-export function PlannedFeaturePage({ title, description }: { title: string; description: string }) {
+import { PageHeader, Panel, EmptyState } from "@/components/app/ui-kit";
+
+interface PlannedFeaturePageProps {
+  title: string;
+  description: string;
+  actions?: ReactNode;
+}
+
+export function PlannedFeaturePage({ title, description, actions }: PlannedFeaturePageProps) {
   return (
     <div className="space-y-5">
-      <PageHeader title={title} description={description} />
-      <Panel>
-        <div className="space-y-3">
-          <StatusBadge tone="info">Planned</StatusBadge>
-          <p className="text-sm text-muted-foreground">
-            This page is a navigation placeholder. Its data and management features have not been
-            implemented.
-          </p>
-        </div>
+      <PageHeader title={title} description={description} actions={actions} />
+      <Panel title={title} description={description}>
+        <EmptyState
+          message="Not yet available"
+          hint="This feature is planned for a future release."
+        />
       </Panel>
     </div>
   );

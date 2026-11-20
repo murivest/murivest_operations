@@ -1,12 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router'
 
-import { PlannedFeaturePage } from "@/components/app/PlannedFeaturePage";
+export const Route = createFileRoute('/_authenticated/app/website/analytics')({
+  component: RouteComponent,
+})
 
-export const Route = createFileRoute("/_authenticated/app/website/analytics")({
-  component: () => (
-    <PlannedFeaturePage
-      title="Lead analytics"
-      description="Website lead trends and market performance."
-    />
-  ),
-});
+function RouteComponent() {
+  return <div>Hello "/_authenticated/app/website/analytics"!</div>
+}

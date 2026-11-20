@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -229,8 +230,8 @@ function QuickActions() {
 }
 
 function DashboardPage() {
-  const { profile, role, can } = useAuth();
-  const { data, isLoading, error } = useDashboardData();
+  const [period, setPeriod] = useState<"7d" | "30d" | "90d" | "all">("30d");
+
 
   if (isLoading) return <LoadingState label="Loading dashboard…" />;
   if (error || !data)
@@ -253,6 +254,21 @@ function DashboardPage() {
         }`}
         actions={<QuickActions />}
       />
+      <div className="flex flex-wrap items-center gap-2 rounded border border-border bg-card p-3">
+        <span className="text-xs font-medium text-muted-foreground">Reporting period:</span>
+        {(["7d", "30d", "90d", "all"] as const).map((p) => (
+          <button
+            key={p}
+            onClick={() => setPeriod(p)}
+            className={`rounded px-3 py-1 text-xs font-medium ${period === p ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
+          >
+            {p === "7d" ? "7 days" : p === "30d" ? "30 days" : p === "90d" ? "90 days" : "All time"}
+          </button>
+        ))}
+        <span className="ml-auto text-xs text-muted-foreground">
+          Showing metrics for {period === "all" ? "all time" : `last ${period.replace("d", "")} days`}
+        </span>
+      </div>
 
       {isAdvisor ? (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
@@ -281,7 +297,7 @@ function DashboardPage() {
             tone={c.followupsOverdue > 0 ? "destructive" : "success"}
             hint={`${c.followupsDue} due today`}
           />
-          <StatCard label="Website inquiries" value={c.websiteInquiries} />
+          <StatCard label="Inquiries" value={c.websiteInquiries} />
           <StatCard label="Jiji inquiries" value={c.jijiInquiries} />
           <StatCard label="Escalated matters" value={c.escalated} tone="warning" />
           {isMD ? (

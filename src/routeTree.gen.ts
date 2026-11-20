@@ -49,6 +49,7 @@ import { Route as AuthenticatedAppPropertiesIndexRouteImport } from './routes/_a
 import { Route as AuthenticatedAppPropertiesPropertyIdRouteImport } from './routes/_authenticated/app.properties.$propertyId'
 import { Route as AuthenticatedAppTasksTaskIdRouteImport } from './routes/_authenticated/app.tasks.$taskId'
 import { Route as AuthenticatedAppTrainingModuleIdRouteImport } from './routes/_authenticated/app.training.$moduleId'
+import { Route as AuthenticatedAppWebsiteInquiriesDetailIndexRouteImport } from './routes/_authenticated/app.website-inquiries-detail.index'
 import { Route as AuthenticatedAppWebsiteAnalyticsRouteImport } from './routes/_authenticated/app.website.analytics'
 import { Route as AuthenticatedAppWebsiteInvestorsRouteImport } from './routes/_authenticated/app.website.investors'
 import { Route as AuthenticatedAppWebsiteSubscriptionsRouteImport } from './routes/_authenticated/app.website.subscriptions'
@@ -57,7 +58,6 @@ import { Route as AuthenticatedAppAdminPortalAnnouncementsRouteImport } from './
 import { Route as AuthenticatedAppAdminPortalDocumentsRouteImport } from './routes/_authenticated/app.admin.portal.documents'
 import { Route as AuthenticatedAppAdminPortalPropertiesRouteImport } from './routes/_authenticated/app.admin.portal.properties'
 import { Route as AuthenticatedAppAdminPortalResourcesRouteImport } from './routes/_authenticated/app.admin.portal.resources'
-import { Route as AuthenticatedAppWebsiteInquiriesIndexRouteImport } from './routes/_authenticated/app.website.inquiries.index'
 import { Route as AuthenticatedAppWebsiteInquiriesCountryRouteImport } from './routes/_authenticated/app.website.inquiries.$country'
 
 const IndexRoute = IndexRouteImport.update({
@@ -287,6 +287,12 @@ const AuthenticatedAppTrainingModuleIdRoute =
     path: '/$moduleId',
     getParentRoute: () => AuthenticatedAppTrainingRoute,
   } as any)
+const AuthenticatedAppWebsiteInquiriesDetailIndexRoute =
+  AuthenticatedAppWebsiteInquiriesDetailIndexRouteImport.update({
+    id: '/website-inquiries-detail/',
+    path: '/website-inquiries-detail/',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppWebsiteAnalyticsRoute =
   AuthenticatedAppWebsiteAnalyticsRouteImport.update({
     id: '/website/analytics',
@@ -333,12 +339,6 @@ const AuthenticatedAppAdminPortalResourcesRoute =
   AuthenticatedAppAdminPortalResourcesRouteImport.update({
     id: '/admin/portal/resources',
     path: '/admin/portal/resources',
-    getParentRoute: () => AuthenticatedAppRoute,
-  } as any)
-const AuthenticatedAppWebsiteInquiriesIndexRoute =
-  AuthenticatedAppWebsiteInquiriesIndexRouteImport.update({
-    id: '/website/inquiries/',
-    path: '/website/inquiries/',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
 const AuthenticatedAppWebsiteInquiriesCountryRoute =
@@ -391,13 +391,13 @@ export interface FileRoutesByFullPath {
   '/app/website/subscriptions': typeof AuthenticatedAppWebsiteSubscriptionsRoute
   '/app/inquiries/': typeof AuthenticatedAppInquiriesIndexRoute
   '/app/properties/': typeof AuthenticatedAppPropertiesIndexRoute
+  '/app/website-inquiries-detail/': typeof AuthenticatedAppWebsiteInquiriesDetailIndexRoute
   '/app/admin/portal/activity': typeof AuthenticatedAppAdminPortalActivityRoute
   '/app/admin/portal/announcements': typeof AuthenticatedAppAdminPortalAnnouncementsRoute
   '/app/admin/portal/documents': typeof AuthenticatedAppAdminPortalDocumentsRoute
   '/app/admin/portal/properties': typeof AuthenticatedAppAdminPortalPropertiesRoute
   '/app/admin/portal/resources': typeof AuthenticatedAppAdminPortalResourcesRoute
   '/app/website/inquiries/$country': typeof AuthenticatedAppWebsiteInquiriesCountryRoute
-  '/app/website/inquiries/': typeof AuthenticatedAppWebsiteInquiriesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -441,13 +441,13 @@ export interface FileRoutesByTo {
   '/app/website/subscriptions': typeof AuthenticatedAppWebsiteSubscriptionsRoute
   '/app/inquiries': typeof AuthenticatedAppInquiriesIndexRoute
   '/app/properties': typeof AuthenticatedAppPropertiesIndexRoute
+  '/app/website-inquiries-detail': typeof AuthenticatedAppWebsiteInquiriesDetailIndexRoute
   '/app/admin/portal/activity': typeof AuthenticatedAppAdminPortalActivityRoute
   '/app/admin/portal/announcements': typeof AuthenticatedAppAdminPortalAnnouncementsRoute
   '/app/admin/portal/documents': typeof AuthenticatedAppAdminPortalDocumentsRoute
   '/app/admin/portal/properties': typeof AuthenticatedAppAdminPortalPropertiesRoute
   '/app/admin/portal/resources': typeof AuthenticatedAppAdminPortalResourcesRoute
   '/app/website/inquiries/$country': typeof AuthenticatedAppWebsiteInquiriesCountryRoute
-  '/app/website/inquiries': typeof AuthenticatedAppWebsiteInquiriesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -494,13 +494,13 @@ export interface FileRoutesById {
   '/_authenticated/app/website/subscriptions': typeof AuthenticatedAppWebsiteSubscriptionsRoute
   '/_authenticated/app/inquiries/': typeof AuthenticatedAppInquiriesIndexRoute
   '/_authenticated/app/properties/': typeof AuthenticatedAppPropertiesIndexRoute
+  '/_authenticated/app/website-inquiries-detail/': typeof AuthenticatedAppWebsiteInquiriesDetailIndexRoute
   '/_authenticated/app/admin/portal/activity': typeof AuthenticatedAppAdminPortalActivityRoute
   '/_authenticated/app/admin/portal/announcements': typeof AuthenticatedAppAdminPortalAnnouncementsRoute
   '/_authenticated/app/admin/portal/documents': typeof AuthenticatedAppAdminPortalDocumentsRoute
   '/_authenticated/app/admin/portal/properties': typeof AuthenticatedAppAdminPortalPropertiesRoute
   '/_authenticated/app/admin/portal/resources': typeof AuthenticatedAppAdminPortalResourcesRoute
   '/_authenticated/app/website/inquiries/$country': typeof AuthenticatedAppWebsiteInquiriesCountryRoute
-  '/_authenticated/app/website/inquiries/': typeof AuthenticatedAppWebsiteInquiriesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -547,13 +547,13 @@ export interface FileRouteTypes {
     | '/app/website/subscriptions'
     | '/app/inquiries/'
     | '/app/properties/'
+    | '/app/website-inquiries-detail/'
     | '/app/admin/portal/activity'
     | '/app/admin/portal/announcements'
     | '/app/admin/portal/documents'
     | '/app/admin/portal/properties'
     | '/app/admin/portal/resources'
     | '/app/website/inquiries/$country'
-    | '/app/website/inquiries/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -597,13 +597,13 @@ export interface FileRouteTypes {
     | '/app/website/subscriptions'
     | '/app/inquiries'
     | '/app/properties'
+    | '/app/website-inquiries-detail'
     | '/app/admin/portal/activity'
     | '/app/admin/portal/announcements'
     | '/app/admin/portal/documents'
     | '/app/admin/portal/properties'
     | '/app/admin/portal/resources'
     | '/app/website/inquiries/$country'
-    | '/app/website/inquiries'
   id:
     | '__root__'
     | '/'
@@ -649,13 +649,13 @@ export interface FileRouteTypes {
     | '/_authenticated/app/website/subscriptions'
     | '/_authenticated/app/inquiries/'
     | '/_authenticated/app/properties/'
+    | '/_authenticated/app/website-inquiries-detail/'
     | '/_authenticated/app/admin/portal/activity'
     | '/_authenticated/app/admin/portal/announcements'
     | '/_authenticated/app/admin/portal/documents'
     | '/_authenticated/app/admin/portal/properties'
     | '/_authenticated/app/admin/portal/resources'
     | '/_authenticated/app/website/inquiries/$country'
-    | '/_authenticated/app/website/inquiries/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -946,6 +946,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppTrainingModuleIdRouteImport
       parentRoute: typeof AuthenticatedAppTrainingRoute
     }
+    '/_authenticated/app/website-inquiries-detail/': {
+      id: '/_authenticated/app/website-inquiries-detail/'
+      path: '/website-inquiries-detail'
+      fullPath: '/app/website-inquiries-detail/'
+      preLoaderRoute: typeof AuthenticatedAppWebsiteInquiriesDetailIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/website/analytics': {
       id: '/_authenticated/app/website/analytics'
       path: '/website/analytics'
@@ -1000,13 +1007,6 @@ declare module '@tanstack/react-router' {
       path: '/admin/portal/resources'
       fullPath: '/app/admin/portal/resources'
       preLoaderRoute: typeof AuthenticatedAppAdminPortalResourcesRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
-    }
-    '/_authenticated/app/website/inquiries/': {
-      id: '/_authenticated/app/website/inquiries/'
-      path: '/website/inquiries'
-      fullPath: '/app/website/inquiries/'
-      preLoaderRoute: typeof AuthenticatedAppWebsiteInquiriesIndexRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/website/inquiries/$country': {
@@ -1099,13 +1099,13 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppWebsiteSubscriptionsRoute: typeof AuthenticatedAppWebsiteSubscriptionsRoute
   AuthenticatedAppInquiriesIndexRoute: typeof AuthenticatedAppInquiriesIndexRoute
   AuthenticatedAppPropertiesIndexRoute: typeof AuthenticatedAppPropertiesIndexRoute
+  AuthenticatedAppWebsiteInquiriesDetailIndexRoute: typeof AuthenticatedAppWebsiteInquiriesDetailIndexRoute
   AuthenticatedAppAdminPortalActivityRoute: typeof AuthenticatedAppAdminPortalActivityRoute
   AuthenticatedAppAdminPortalAnnouncementsRoute: typeof AuthenticatedAppAdminPortalAnnouncementsRoute
   AuthenticatedAppAdminPortalDocumentsRoute: typeof AuthenticatedAppAdminPortalDocumentsRoute
   AuthenticatedAppAdminPortalPropertiesRoute: typeof AuthenticatedAppAdminPortalPropertiesRoute
   AuthenticatedAppAdminPortalResourcesRoute: typeof AuthenticatedAppAdminPortalResourcesRoute
   AuthenticatedAppWebsiteInquiriesCountryRoute: typeof AuthenticatedAppWebsiteInquiriesCountryRoute
-  AuthenticatedAppWebsiteInquiriesIndexRoute: typeof AuthenticatedAppWebsiteInquiriesIndexRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
@@ -1150,6 +1150,8 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
     AuthenticatedAppWebsiteSubscriptionsRoute,
   AuthenticatedAppInquiriesIndexRoute: AuthenticatedAppInquiriesIndexRoute,
   AuthenticatedAppPropertiesIndexRoute: AuthenticatedAppPropertiesIndexRoute,
+  AuthenticatedAppWebsiteInquiriesDetailIndexRoute:
+    AuthenticatedAppWebsiteInquiriesDetailIndexRoute,
   AuthenticatedAppAdminPortalActivityRoute:
     AuthenticatedAppAdminPortalActivityRoute,
   AuthenticatedAppAdminPortalAnnouncementsRoute:
@@ -1162,8 +1164,6 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
     AuthenticatedAppAdminPortalResourcesRoute,
   AuthenticatedAppWebsiteInquiriesCountryRoute:
     AuthenticatedAppWebsiteInquiriesCountryRoute,
-  AuthenticatedAppWebsiteInquiriesIndexRoute:
-    AuthenticatedAppWebsiteInquiriesIndexRoute,
 }
 
 const AuthenticatedAppRouteWithChildren =
