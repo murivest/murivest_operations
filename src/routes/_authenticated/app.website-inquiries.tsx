@@ -135,8 +135,7 @@ function BreakdownList({
   );
 }
 
-// ✅ Removed `export` here to fix the TanStack Router warning
-function WebsiteInquiriesPage({ initialCountry = ALL }: { initialCountry?: string }) {
+export function WebsiteInquiriesPage({ initialCountry = ALL }: { initialCountry?: string }) {
   const queryClient = useQueryClient();
 
   const [period, setPeriod] = useState<PeriodKey>("28d");

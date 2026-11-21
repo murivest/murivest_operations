@@ -48,6 +48,6 @@ function AuctionPropertiesPage() {
   );
 }
 
-export const Route = createFileRoute("/_authenticated/app/auctions/properties" as never)({
+export const Route = createFileRoute("/_authenticated/app/auctions/properties")({
   component: AuctionPropertiesPage,
 });

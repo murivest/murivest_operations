@@ -43,6 +43,6 @@ function InvestorPortalAdminPage() {
   );
 }
 
-export const Route = createFileRoute("/_authenticated/app/admin/investors-portal" as any)({
+export const Route = createFileRoute("/_authenticated/app/admin/investors-portal")({
   component: InvestorPortalAdminPage,
 });
