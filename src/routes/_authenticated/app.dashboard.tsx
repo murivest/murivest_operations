@@ -231,7 +231,8 @@ function QuickActions() {
 
 function DashboardPage() {
   const [period, setPeriod] = useState<"7d" | "30d" | "90d" | "all">("30d");
-
+  const { data, isLoading, error } = useDashboardData();
+  const { role, profile, can } = useAuth();
 
   if (isLoading) return <LoadingState label="Loading dashboard…" />;
   if (error || !data)

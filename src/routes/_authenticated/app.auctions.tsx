@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Search } from "lucide-react";
 
-import { PageHeader, Panel, DataTable, Row, Cell, EmptyState, LoadingState, SearchInput, StatusBadge, Button } from "@/components/app/ui-kit";
+import { PageHeader, Panel, DataTable, Row, Cell, EmptyState, LoadingState, SearchInput, StatusBadge } from "@/components/app/ui-kit";
 import { Card } from "@/components/ui/card";
 
 type AuctionBid = { id: string; bidder: string; amount: number; property: string; date: string; status: string };
